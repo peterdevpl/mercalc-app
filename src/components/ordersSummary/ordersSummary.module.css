@@ -1,0 +1,20 @@
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.statsFigure {
+  width: 20%;
+}
+
+.statsLabel {
+  display: block;
+  text-align: center;
+}
+
+.statsValue {
+  color: var(--background);
+  display: block;
+  font-size: 150%;
+  text-align: center;
+}

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google'
 import { ReactNode } from 'react';
 import SummaryRoot from '@/components/summaryRoot';
-import './globals.css'
+import './globals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const inter = Inter({ subsets: ['latin'] })

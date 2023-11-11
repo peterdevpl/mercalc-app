@@ -16,7 +16,6 @@ const OrderListProvider = ({ children }: { children: ReactNode }) => {
   const [orderList, setOrderList] = useState<IOrderList>(emptyOrderList);
 
   const updateList = (newList: IOrderList) => {
-    console.log(newList);  // todo
     setOrderList(newList);
   }
 

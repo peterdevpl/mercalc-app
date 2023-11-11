@@ -4,6 +4,7 @@ import Papa, { ParseConfig, ParseResult } from 'papaparse';
 import { useOrderList } from '@/context/orderListContext';
 import importEtsyCsv from "@/lib/import/etsyCsvImporter";
 import styles from './csvUpload.module.css';
+import { IOrderList } from '@/lib/orderList';
 
 export default function CsvUpload() {
   const orderListContext = useOrderList();
@@ -22,7 +23,11 @@ export default function CsvUpload() {
       if (csv.errors.length > 0) {
         alert('Plik CSV nie jest poprawny');  // todo error handling
       } else {
-        orderListContext.updateList(importEtsyCsv(csv.data));
+        const orders = importEtsyCsv(csv.data);
+        const ordersList: IOrderList = {
+          orders: orders,
+        };
+        orderListContext.updateList(ordersList);
       }
     };
     reader.readAsBinaryString(files[0]);

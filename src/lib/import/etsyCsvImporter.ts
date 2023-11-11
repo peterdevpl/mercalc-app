@@ -1,13 +1,10 @@
-import { IOrder, IOrderItem, IOrderList } from '@/lib/orderList';
+import { IOrder, IOrderItem } from '@/lib/orderList';
 import Decimal from 'decimal.js';
 
-export default function importEtsyCsv(data: string[][]): IOrderList {
+export default function importEtsyCsv(data: string[][]): IOrder[] {
   checkHeader(data[0]);
 
-  const list: IOrderList = {
-    orders: []
-  };
-
+  const orders: IOrder[] = [];
   let order: IOrder | null = null;
 
   /* The Etsy order items CSV is sorted by date descending, we want to reverse it */
@@ -18,7 +15,7 @@ export default function importEtsyCsv(data: string[][]): IOrderList {
       order = buildFreshOrder(row);
     } else if (row.orderId !== order.id) {
       processOrder(order);
-      list.orders.push(order);
+      orders.push(order);
       order = buildFreshOrder(row);
     }
 
@@ -39,10 +36,10 @@ export default function importEtsyCsv(data: string[][]): IOrderList {
   if (order !== null) {
     /* The last order from the loop */
     processOrder(order);
-    list.orders.push(order);
+    orders.push(order);
   }
 
-  return list;
+  return orders;
 }
 
 function checkHeader(header: string[]): void
@@ -56,6 +53,7 @@ type EtsyCsvRow = {
   orderId: string;
   date: string;
   country: string;
+  currency: string;
   discount: string;
   shipping: string;
   total: string;
@@ -67,6 +65,7 @@ function parseRow(data: string[]): EtsyCsvRow
     orderId: data[24],
     date: data[0],
     country: data[23],
+    currency: data[12],
     discount: data[7],
     shipping: data[9],
     total: data[11]
@@ -84,6 +83,7 @@ function buildFreshOrder(row: EtsyCsvRow): IOrder
     totalConverted: null,
     rate: null,
     country: row.country,
+    currency: row.currency,
     items: []
   };
 }

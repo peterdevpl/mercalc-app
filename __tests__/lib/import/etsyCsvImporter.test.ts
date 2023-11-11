@@ -8,9 +8,8 @@ describe('EtsyCSVImporter', () => {
       ['11/06/23', 'Bridesmaid gifts', '', '1', '19.00', '', '', '0.00', '0.00', '4.9', '0', '19', 'EUR', '12345678', '1491609849', '11/06/2023', '', 'Jane Doe', 'Auf der Röte 1', '', 'Müllheim', '', '79379', 'Germany', '5678', 'Personalization', 'online', 'listing', 'online_cc', '', '', '0', '']
     ];
 
-    const orderList = importEtsyCsv(data);
-    console.log(orderList.orders);
+    const orders = importEtsyCsv(data);
 
-    expect(orderList.orders.length).toEqual(2);
+    expect(orders.length).toEqual(2);
   })
 })
