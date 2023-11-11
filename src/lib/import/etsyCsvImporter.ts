@@ -36,6 +36,12 @@ export default function importEtsyCsv(data: string[][]): IOrderList {
     }
   }
 
+  if (order !== null) {
+    /* The last order from the loop */
+    processOrder(order);
+    list.orders.push(order);
+  }
+
   return list;
 }
 
