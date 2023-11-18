@@ -13,8 +13,8 @@ export type IOrder = {
   total: Decimal;
   totalConverted: Decimal | null;
   rate: ExchangeRate | null;
-  country: string;
-  currency: string;
+  country: string;  // ISO code
+  currency: string;  // ISO code
   items: IOrderItem[];
 }
 

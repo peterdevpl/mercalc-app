@@ -3,6 +3,7 @@
 import { IOrder, IOrderList } from '@/lib/orderList';
 import { findExchangeRate } from '@/lib/currency/currencyConverter';
 import { ExchangeRate } from '@/lib/currency/currencyExchange';
+import Decimal from 'decimal.js';
 
 export default async function buildOrderList(orders: IOrder[]): Promise<IOrderList> {
   const ordersList: IOrderList = {
@@ -35,7 +36,12 @@ function convertCurrency(orders: IOrder[], rates: ExchangeRate[])
 
     const result = findExchangeRate(order, ratesPerDate);
     if (result.success) {
-      order.rate = result.value;
+      order.rate = {
+        date: result.value.date,
+        sourceName: result.value.sourceName,
+        sourceDescription: result.value.sourceDescription,
+        rate: new Decimal(result.value.rate),  // JSON parser does not create an instance of Decimal
+      };
       order.totalConverted = order.total.mul(result.value.rate);
     }
     // todo: error handling
