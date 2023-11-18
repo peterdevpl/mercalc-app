@@ -1,4 +1,5 @@
 import { IOrder, IOrderItem } from '@/lib/orderList';
+import { DateTime } from 'luxon';
 import Decimal from 'decimal.js';
 
 export default function importEtsyCsv(data: string[][]): IOrder[] {
@@ -76,7 +77,7 @@ function buildFreshOrder(row: EtsyCsvRow): IOrder
 {
   return {
     id: row.orderId,
-    date: row.date,
+    date: DateTime.fromFormat(row.date, 'MM/dd/yy').toISODate() || '',
     discount: new Decimal(0),
     shipping: new Decimal(0),
     total: new Decimal(0),

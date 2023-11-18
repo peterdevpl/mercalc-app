@@ -1,4 +1,5 @@
 import Decimal from 'decimal.js';
+import { ExchangeRate } from '@/lib/currency/currencyExchange';
 
 export type IOrderItem = {
   total: Decimal;
@@ -11,7 +12,7 @@ export type IOrder = {
   shipping: Decimal;
   total: Decimal;
   totalConverted: Decimal | null;
-  rate: Decimal | null;
+  rate: ExchangeRate | null;
   country: string;
   currency: string;
   items: IOrderItem[];
