@@ -16,6 +16,7 @@ export default function OssSummary() {
         countryId: key,
         countryName: countries.get(key),
         vatRate: value.vatRate.times(100).toString() + '%',
+        totalAmount: value.totalAmount.toFixed(2),
         vatAmount: value.totalVat.toFixed(2)
       });
     });
@@ -27,6 +28,7 @@ export default function OssSummary() {
           <thead>
             <tr>
               <th>Kraj</th>
+              <th>Sprzedaż w EUR</th>
               <th>Stawka VAT</th>
               <th>Kwota VAT w EUR</th>
             </tr>
@@ -36,6 +38,7 @@ export default function OssSummary() {
             return (
               <tr key={row.countryId}>
                 <td>{row.countryName}</td>
+                <td>{row.totalAmount}</td>
                 <td>{row.vatRate}</td>
                 <td>{row.vatAmount}</td>
               </tr>

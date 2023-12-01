@@ -12,14 +12,15 @@ const thisCountry = 'PL';
 const ossLimit = new Decimal('10000.00');
 
 export default function buildSummary(orders: IOrder[]): OrdersSummary {
+  const zero = new Decimal(0);
   const summary: OrdersSummary = {
     totalPerCurrency: new Map<string, Decimal>(),
-    totalConvertedToLocal: new Decimal(0),
+    totalConvertedToLocal: zero,
     ossSummary: null,
     // below we assume calculations in EUR
-    totalWithinEU: new Decimal(0),
-    totalDomestic: new Decimal(0),
-    totalOutsideEU: new Decimal(0)
+    totalWithinEU: zero,
+    totalDomestic: zero,
+    totalOutsideEU: zero
   };
 
   for (const order of orders) {
@@ -46,12 +47,14 @@ export default function buildSummary(orders: IOrder[]): OrdersSummary {
           if (!summary.ossSummary.countries.has(order.country)) {
             summary.ossSummary.countries.set(order.country, {
               vatRate,
-              totalVat: new Decimal(0)
+              totalAmount: zero,
+              totalVat: zero
             });
           }
           const countrySummary = summary.ossSummary.countries.get(order.country);
           if (countrySummary) {
             const vatAmount = order.total.times(vatRate);
+            countrySummary.totalAmount = countrySummary.totalAmount.add(order.total);
             countrySummary.totalVat = countrySummary.totalVat.add(vatAmount);
           }
         }

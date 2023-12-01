@@ -2,6 +2,7 @@ import Decimal from 'decimal.js';
 
 export type OssCountrySummary = {
   vatRate: Decimal;
+  totalAmount: Decimal;
   totalVat: Decimal;
 };
 

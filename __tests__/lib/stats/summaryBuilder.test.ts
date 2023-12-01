@@ -171,8 +171,10 @@ describe('SummaryBuilder', () => {
     expect(summary.ossSummary?.orderAboveOssLimit).toBe('2');
     expect(summary.ossSummary?.countries.size).toBe(2);
     expect(summary.ossSummary?.countries.get('FR')?.vatRate).toEqual(new Decimal('0.20'));
+    expect(summary.ossSummary?.countries.get('FR')?.totalAmount).toEqual(new Decimal('35.00'));
     expect(summary.ossSummary?.countries.get('FR')?.totalVat).toEqual(new Decimal('7.00'));
     expect(summary.ossSummary?.countries.get('IE')?.vatRate).toEqual(new Decimal('0.23'));
+    expect(summary.ossSummary?.countries.get('IE')?.totalAmount).toEqual(new Decimal('10.00'));
     expect(summary.ossSummary?.countries.get('IE')?.totalVat).toEqual(new Decimal('2.30'));
   })
 })
