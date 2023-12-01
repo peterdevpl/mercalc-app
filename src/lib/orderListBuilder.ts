@@ -1,5 +1,6 @@
 'use client';
 
+import buildTimeline from '@/lib/timelineBuilder';
 import { IOrder, IOrderList } from '@/lib/orderList';
 import { findExchangeRate } from '@/lib/currency/currencyConverter';
 import { ExchangeRate } from '@/lib/currency/currencyExchange';
@@ -8,6 +9,7 @@ import Decimal from 'decimal.js';
 export default async function buildOrderList(orders: IOrder[]): Promise<IOrderList> {
   const ordersList: IOrderList = {
     orders: orders,
+    timeline: buildTimeline(orders)
   };
 
   const response = await fetch('/api/rates');

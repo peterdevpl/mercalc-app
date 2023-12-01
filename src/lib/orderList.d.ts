@@ -18,8 +18,15 @@ export type IOrder = {
   items: IOrderItem[];
 }
 
+export type OrdersTimeline = {
+  months: string[];
+  quarters: string[];
+  years: string[];
+};
+
 export type IOrderList = {
   orders: IOrder[];
+  timeline: OrdersTimeline;
   // any other fields that should go in the global context - can live here
   // for component-specific data, use their state
 }
