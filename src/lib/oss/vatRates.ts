@@ -1,0 +1,32 @@
+import Decimal from 'decimal.js';
+
+const vatRates: Map<string, Decimal> = new Map<string, Decimal>();
+vatRates.set('AT', new Decimal('0.20'));
+vatRates.set('BE', new Decimal('0.21'));
+vatRates.set('BG', new Decimal('0.20'));
+vatRates.set('HR', new Decimal('0.25'));
+vatRates.set('CY', new Decimal('0.19'));
+vatRates.set('CZ', new Decimal('0.21'));
+vatRates.set('DK', new Decimal('0.25'));
+vatRates.set('EE', new Decimal('0.20'));
+vatRates.set('FI', new Decimal('0.24'));
+vatRates.set('FR', new Decimal('0.20'));
+vatRates.set('DE', new Decimal('0.19'));
+vatRates.set('GR', new Decimal('0.24'));
+vatRates.set('HU', new Decimal('0.27'));
+vatRates.set('IE', new Decimal('0.23'));
+vatRates.set('IT', new Decimal('0.22'));
+vatRates.set('LV', new Decimal('0.21'));
+vatRates.set('LT', new Decimal('0.21'));
+vatRates.set('LU', new Decimal('0.16'));
+vatRates.set('MT', new Decimal('0.18'));
+vatRates.set('NL', new Decimal('0.21'));
+vatRates.set('PL', new Decimal('0.23'));
+vatRates.set('PT', new Decimal('0.23'));
+vatRates.set('RO', new Decimal('0.19'));
+vatRates.set('SK', new Decimal('0.20'));
+vatRates.set('SI', new Decimal('0.22'));
+vatRates.set('ES', new Decimal('0.21'));
+vatRates.set('SE', new Decimal('0.25'));
+
+export default vatRates;
