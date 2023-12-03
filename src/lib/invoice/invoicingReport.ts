@@ -31,7 +31,6 @@ export default function buildInvoicingReport(orders: IOrder[], monthYear: string
     rowId++;
     invoiceNumber++;
   }
-  console.log(report);
 
   return report;
 };
