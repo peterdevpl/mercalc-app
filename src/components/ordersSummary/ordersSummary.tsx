@@ -20,16 +20,23 @@ export default function OrdersSummary() {
           <strong className={styles.statsValue}>{summary.totalPerCurrency.get('EUR')?.toFixed(2)}</strong>
         </div>
         <div className={styles.statsFigure}>
+          <span className={styles.statsLabel}>Suma PLN:</span>
+          <strong className={styles.statsValue}>{summary.totalConvertedToLocal.toFixed(2)}</strong>
+        </div>
+        <div className={styles.statsFigure}>
           <span className={styles.statsLabel}>Obrót w Polsce:</span>
-          <strong className={styles.statsValue}>{summary.totalDomestic.toFixed(2)} EUR</strong>
+          <strong className={styles.statsValue}>{summary.totalDomestic.toFixed(2)} EUR<br />
+            {summary.totalDomesticConverted.toFixed(2)} PLN</strong>
         </div>
         <div className={styles.statsFigure}>
           <span className={styles.statsLabel}>Obrót z krajami UE:</span>
-          <strong className={styles.statsValue}>{summary.totalWithinEU.toFixed(2)} EUR</strong>
+          <strong className={styles.statsValue}>{summary.totalWithinEU.toFixed(2)} EUR<br />
+            {summary.totalWithinEUConverted.toFixed(2)} PLN</strong>
         </div>
         <div className={styles.statsFigure}>
           <span className={styles.statsLabel}>Obrót poza UE:</span>
-          <strong className={styles.statsValue}>{summary.totalOutsideEU.toFixed(2)} EUR</strong>
+          <strong className={styles.statsValue}>{summary.totalOutsideEU.toFixed(2)} EUR<br />
+            {summary.totalOutsideEUConverted.toFixed(2)} PLN</strong>
         </div>
       </div>}
     </>

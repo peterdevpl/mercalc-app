@@ -11,6 +11,7 @@ const thisCountry = 'PL';
 
 const ossLimit = new Decimal('10000.00');
 
+// todo refactor and tests
 export default function buildSummary(orders: IOrder[]): OrdersSummary {
   const zero = new Decimal(0);
   const summary: OrdersSummary = {
@@ -20,7 +21,11 @@ export default function buildSummary(orders: IOrder[]): OrdersSummary {
     // below we assume calculations in EUR
     totalWithinEU: zero,
     totalDomestic: zero,
-    totalOutsideEU: zero
+    totalOutsideEU: zero,
+    // below we have a local currency
+    totalWithinEUConverted: zero,
+    totalDomesticConverted: zero,
+    totalOutsideEUConverted: zero
   };
 
   for (const order of orders) {
@@ -31,11 +36,15 @@ export default function buildSummary(orders: IOrder[]): OrdersSummary {
       summary.totalPerCurrency.set(order.currency, total.add(order.total));
     }
 
+    summary.totalConvertedToLocal = summary.totalConvertedToLocal.add(order.totalConverted ?? zero);
+
     if (order.currency === 'EUR') {
       if (order.country === thisCountry) {
         summary.totalDomestic = summary.totalDomestic.add(order.total);
+        summary.totalDomesticConverted = summary.totalDomesticConverted.add(order.totalConverted ?? zero);
       } else if (euCountries.indexOf(order.country) !== -1) {
         summary.totalWithinEU = summary.totalWithinEU.add(order.total);
+        summary.totalWithinEUConverted = summary.totalWithinEUConverted.add(order.totalConverted ?? zero);
         if (summary.totalWithinEU.greaterThan(ossLimit)) {
           if (summary.ossSummary === null) {
             summary.ossSummary = {
@@ -60,6 +69,7 @@ export default function buildSummary(orders: IOrder[]): OrdersSummary {
         }
       } else {
         summary.totalOutsideEU = summary.totalOutsideEU.add(order.total);
+        summary.totalOutsideEUConverted = summary.totalOutsideEUConverted.add(order.totalConverted ?? zero);
       }
     } else {
       // todo log this

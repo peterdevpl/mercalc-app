@@ -7,5 +7,8 @@ export type OrdersSummary = {
   totalWithinEU: Decimal;
   totalDomestic: Decimal;
   totalOutsideEU: Decimal;
+  totalWithinEUConverted: Decimal;
+  totalDomesticConverted: Decimal;
+  totalOutsideEUConverted: Decimal;
   ossSummary: OssSummary | null;
 };
