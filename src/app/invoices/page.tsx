@@ -17,18 +17,17 @@ export default function Invoices() {
   const [ start, setStart ] = useState('1');
   const [ suffix, setSuffix ] = useState('/2023');
 
-  function buildInvoiceList(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setReport(buildInvoicingReport(context.orderList.orders, monthYear, prefix, parseInt(start), suffix));
-  }
-
-  const handleMonthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => setMonthYear(event.currentTarget.value);  // todo wrap the event, so we dont have to know if it's a select element
-  const handlePrefixChange = (event: React.ChangeEvent<HTMLInputElement>) => setPrefix(event.currentTarget.value);
-  const handleStartChange = (event: React.ChangeEvent<HTMLInputElement>) => setStart(event.currentTarget.value);
-  const handleSuffixChange = (event: React.ChangeEvent<HTMLInputElement>) => setSuffix(event.currentTarget.value);
-
   let contents;
   if (context.orderList.orders.length > 0) {
+    const buildInvoiceList = (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setReport(buildInvoicingReport(context.orderList.orders, monthYear, prefix, parseInt(start), suffix));
+    }
+    const handleMonthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => setMonthYear(event.currentTarget.value);  // todo wrap the event, so we dont have to know if it's a select element
+    const handlePrefixChange = (event: React.ChangeEvent<HTMLInputElement>) => setPrefix(event.currentTarget.value);
+    const handleStartChange = (event: React.ChangeEvent<HTMLInputElement>) => setStart(event.currentTarget.value);
+    const handleSuffixChange = (event: React.ChangeEvent<HTMLInputElement>) => setSuffix(event.currentTarget.value);
+
     contents = (
       <>
         <form onSubmit={buildInvoiceList}>
