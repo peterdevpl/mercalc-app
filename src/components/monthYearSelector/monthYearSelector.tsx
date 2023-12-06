@@ -1,6 +1,6 @@
 const monthNames: string[] = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'];
 
-export default function MonthYearSelector({ id, monthYearValues, onChange }: { id: string, monthYearValues: string[], onChange: any }) {
+export default function MonthYearSelector({ id, values, onChange }: { id: string, values: string[], onChange: any }) {
   const getSingleYear = (monthYearValues: string[]): string | undefined => {
     let lastYear = undefined;
     let year;
@@ -15,21 +15,21 @@ export default function MonthYearSelector({ id, monthYearValues, onChange }: { i
     return lastYear;
   };
 
-  const singleYear = getSingleYear(monthYearValues);
+  const singleYear = getSingleYear(values);
   const items: any[] = [];
 
   let monthIndex;
-  for (let i = monthYearValues.length - 1; i >= 0; i--) {
-    monthIndex = parseInt(monthYearValues[i].substring(5, 7)) - 1;
+  for (let i = values.length - 1; i >= 0; i--) {
+    monthIndex = parseInt(values[i].substring(5, 7)) - 1;
     items.push({
-      value: monthYearValues[i],
-      text: monthNames[monthIndex] + (singleYear ? '' : ' ' + monthYearValues[i].substring(0, 4))
+      value: values[i],
+      text: monthNames[monthIndex] + (singleYear ? '' : ' ' + values[i].substring(0, 4))
     });
   }
 
   return (
     <div>
-      <select id={id} onChange={onChange}>
+      <select className="form-control" id={id} onChange={onChange}>
         {items.map(item => {
           return (
             <option key={item.value} value={item.value}>{item.text}</option>

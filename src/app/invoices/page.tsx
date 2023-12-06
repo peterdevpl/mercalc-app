@@ -31,7 +31,7 @@ export default function Invoices() {
     contents = (
       <>
         <form onSubmit={buildInvoiceList}>
-          <MonthYearSelector id="invoice-month" monthYearValues={context.orderList.timeline.months} onChange={handleMonthYearChange} />
+          <MonthYearSelector id="invoice-month" values={context.orderList.timeline.months} onChange={handleMonthYearChange} />
           <input type="text" id="invoice-prefix" value={prefix} onChange={handlePrefixChange} />
           <input type="number" id="invoice-start" value={start} onChange={handleStartChange} />
           <input type="text" id="invoice-suffix" value={suffix} onChange={handleSuffixChange} />

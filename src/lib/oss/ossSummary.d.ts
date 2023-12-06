@@ -7,6 +7,8 @@ export type OssCountrySummary = {
 };
 
 export type OssSummary = {
+  year: number;
+  month: number;
   countries: Map<string, OssCountrySummary>;
-  orderAboveOssLimit: string;
+  orderAboveOssLimit: string | null;
 };
