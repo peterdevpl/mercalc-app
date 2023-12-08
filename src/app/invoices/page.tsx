@@ -1,11 +1,13 @@
 'use client';
 
 import buildInvoicingReport from '@/lib/invoice/invoicingReport';
-import countries from '@/lib/i18n/polishCountryNames';
+import buildPDFInvoicesList from '@/lib/invoice/export/pdfInvoicesList';
+import { Button } from 'react-bootstrap';
+import downloadBlob from '@/app/downloadBlob';
+import InvoicesList from '@/components/invoicesList/invoicesList';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 import MonthYearSelector from '@/components/monthYearSelector/monthYearSelector';
 import { useOrderList } from '@/context/orderListContext';
-import { Table } from 'react-bootstrap';
 import React, { FormEvent, useState } from 'react';
 
 export default function Invoices() {
@@ -28,6 +30,12 @@ export default function Invoices() {
     const handleStartChange = (event: React.ChangeEvent<HTMLInputElement>) => setStart(event.currentTarget.value);
     const handleSuffixChange = (event: React.ChangeEvent<HTMLInputElement>) => setSuffix(event.currentTarget.value);
 
+    const handlePDFExport = () => {
+      if (report) {
+        downloadBlob(buildPDFInvoicesList(report), 'raport-' + monthYear + '.pdf');
+      }
+    };
+
     contents = (
       <>
         <form onSubmit={buildInvoiceList}>
@@ -38,41 +46,10 @@ export default function Invoices() {
           <button type="submit">Utwórz zestawienie</button>
         </form>
         {report && <section>
-          <Table striped bordered>
-            <thead>
-              <tr>
-                <th>L.p.</th>
-                <th>Nr faktury</th>
-                <th>Data sprzedaży</th>
-                <th>Kwota EUR</th>
-                <th>Kurs przewalutowania</th>
-                <th>Kwota PLN</th>
-                <th>Kraj</th>
-              </tr>
-            </thead>
-            <tbody>
-            {report.rows.map(row => (
-              <tr key={row.rowId}>
-                <td>{row.rowId}.</td>
-                <td>{row.invoiceNumber}</td>
-                <td>{row.date.toFormat('dd-MM-yyyy')}</td>
-                <td>{row.totalEur.toFixed(2)}</td>
-                <td>{row.exchangeRate?.rate.toFixed(4)}</td>
-                <td>{row.totalPln?.toFixed(2)}</td>
-                <td>{countries.get(row.country)}</td>
-              </tr>
-            ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan={3}>Suma</td>
-                <td>EUR {report.totalEur.toFixed(2)}</td>
-                <td></td>
-                <td>PLN {report.totalPln.toFixed(2)}</td>
-                <td></td>
-              </tr>
-            </tfoot>
-          </Table>
+          <InvoicesList report={report} />
+          <div className="form-group">
+            <Button variant="secondary" onClick={handlePDFExport}>Eksportuj do PDF</Button>
+          </div>
         </section>}
       </>
     );
