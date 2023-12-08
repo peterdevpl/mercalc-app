@@ -4,7 +4,12 @@ import { createContext, ReactNode, useContext, useState } from 'react';
 import { IOrderList  } from '@/lib/orderList';
 
 const emptyOrderList: IOrderList = {
-  orders: []
+  orders: [],
+  timeline: {
+    months: [],
+    quarters: [],
+    years: []
+  }
 };
 
 const OrderListContext = createContext({
