@@ -1,6 +1,7 @@
 'use client';
 
 import buildInvoicingReport from '@/lib/invoice/invoicingReport';
+import buildCSVInvoicesList from '@/lib/invoice/export/csvInvoicesList';
 import buildPDFInvoicesList from '@/lib/invoice/export/pdfInvoicesList';
 import { Button } from 'react-bootstrap';
 import downloadBlob from '@/app/downloadBlob';
@@ -36,6 +37,12 @@ export default function Invoices() {
       }
     };
 
+    const handleCSVExport = () => {
+      if (report) {
+        downloadBlob(buildCSVInvoicesList(report), 'raport-' + monthYear + '.csv');
+      }
+    };
+
     contents = (
       <>
         <form onSubmit={buildInvoiceList}>
@@ -49,6 +56,7 @@ export default function Invoices() {
           <InvoicesList report={report} />
           <div className="form-group">
             <Button variant="secondary" onClick={handlePDFExport}>Eksportuj do PDF</Button>
+            <Button variant="secondary" onClick={handleCSVExport}>Eksportuj do CSV</Button>
           </div>
         </section>}
       </>
