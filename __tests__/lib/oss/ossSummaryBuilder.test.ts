@@ -52,6 +52,7 @@ describe('ossSummaryBuilder', () => {
     expect(summary.year).toBe(2023);
     expect(summary.month).toBe(3);
     expect(summary.countries.size).toBe(0);
+    expect(summary.totalVat).toEqual(zero);
     expect(summary.orderAboveOssLimit).toBeNull();
   })
 
@@ -119,6 +120,7 @@ describe('ossSummaryBuilder', () => {
     expect(summary.countries.get('DE')?.vatRate).toEqual(new Decimal('0.19'));
     expect(summary.countries.get('DE')?.totalAmount).toEqual(new Decimal('10.00'));
     expect(summary.countries.get('DE')?.totalVat).toEqual(new Decimal('1.90'));
+    expect(summary.totalVat).toEqual(new Decimal('1.90'));
     expect(summary.orderAboveOssLimit).toEqual('3');
   })
 
@@ -183,6 +185,7 @@ describe('ossSummaryBuilder', () => {
     expect(summary.year).toBe(2023);
     expect(summary.month).toBe(1);
     expect(summary.countries.size).toBe(0);
+    expect(summary.totalVat).toEqual(zero);
     expect(summary.orderAboveOssLimit).toEqual('3');
   })
 
@@ -256,6 +259,7 @@ describe('ossSummaryBuilder', () => {
     expect(summary.countries.get('FR')?.totalAmount).toEqual(new Decimal('50.00'));
     expect(summary.countries.get('FR')?.totalVat).toEqual(new Decimal('10.00'));
 
+    expect(summary.totalVat).toEqual(new Decimal('1910.00'));
     expect(summary.orderAboveOssLimit).toBeNull();
   })
 })

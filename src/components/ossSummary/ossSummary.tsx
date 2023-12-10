@@ -1,15 +1,15 @@
 'use client';
 
 import buildOssSummary from '@/lib/oss/ossSummaryBuilder';
-import Col from 'react-bootstrap/Col';
+import buildPDFOSSSummary from '@/lib/oss/export/pdfOssSummary';
+import { Button, Col, Row, Table } from 'react-bootstrap';
 import countries from '@/lib/i18n/polishCountryNames';
+import downloadBlob from '@/app/downloadBlob';
 import FormCheckInput from 'react-bootstrap/FormCheckInput';
 import FormCheckLabel from 'react-bootstrap/FormCheckLabel';
 import MonthYearSelector from '@/components/monthYearSelector/monthYearSelector';
-import { Table } from 'react-bootstrap';
 import { useOrderList } from '@/context/orderListContext';
 import React, { useState } from 'react';
-import Row from 'react-bootstrap/Row';
 
 export default function OssSummary() {
   const context = useOrderList();
@@ -18,6 +18,10 @@ export default function OssSummary() {
   const summary = buildOssSummary(context.orderList.orders, monthYear, isAlreadyOss);
   const handleMonthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => setMonthYear(event.currentTarget.value);  // todo wrap the event, so we dont have to know if it's a select element
   const handleIsAlreadyOssChange = (event: React.ChangeEvent<HTMLInputElement>) => setIsAlreadyOss(event.currentTarget.checked);
+
+  const handlePDFExport = () => {
+    downloadBlob(buildPDFOSSSummary(summary), 'raport-oss-' + monthYear + '.pdf');
+  };
 
   const rows: any[] = [];
   summary.countries.forEach((value, key) => {
@@ -34,14 +38,15 @@ export default function OssSummary() {
   if (rows.length > 0) {
     rows.sort((a, b) => (a.countryName > b.countryName) ? 1 : -1);
     data = (
+      <>
       <Table striped bordered>
         <thead>
-        <tr>
-          <th>Kraj</th>
-          <th>Sprzedaż w EUR</th>
-          <th>Stawka VAT</th>
-          <th>Kwota VAT w EUR</th>
-        </tr>
+          <tr>
+            <th>Kraj</th>
+            <th>Sprzedaż w EUR</th>
+            <th>Stawka VAT</th>
+            <th>Kwota VAT w EUR</th>
+          </tr>
         </thead>
         <tbody>
         {rows.map((row) => {
@@ -55,7 +60,17 @@ export default function OssSummary() {
           );
         })}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={3}>Suma</td>
+            <td>{summary.totalVat.toFixed(2)}</td>
+          </tr>
+        </tfoot>
       </Table>
+      <div className="form-group">
+        <Button variant="secondary" onClick={handlePDFExport}>Eksportuj do PDF</Button>
+      </div>
+      </>
     );
   } else {
     data = <p>W tym miesiącu nie płacisz VAT OSS.</p>;

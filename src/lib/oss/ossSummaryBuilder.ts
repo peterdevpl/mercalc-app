@@ -18,6 +18,7 @@ export default function buildOssSummary(orders: IOrder[], monthYear: string, isA
     year: parseInt(year),
     month,
     countries: new Map<string, OssCountrySummary>(),
+    totalVat: zero,
     orderAboveOssLimit: null
   };
   let totalWithinEU = zero;
@@ -50,6 +51,7 @@ export default function buildOssSummary(orders: IOrder[], monthYear: string, isA
     if (countOrder) {
       vatRate = vatRates.get(orders[i].country) || zero;
       const vatAmount = orders[i].total.times(vatRate);
+      summary.totalVat = summary.totalVat.add(vatAmount);
       let countrySummary = summary.countries.get(orders[i].country);
       if (countrySummary === undefined) {
         countrySummary = {
