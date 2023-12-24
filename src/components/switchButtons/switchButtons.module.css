@@ -1,0 +1,26 @@
+.switchButtons {
+  text-align: right;
+}
+
+.switchButtons button {
+  background: white;
+  border-color: #808080;
+  border-style: solid solid solid none;
+  border-width: 1px;
+  color: black;
+  padding: 0 8px;
+}
+
+.switchButtons button:first-child {
+  border-radius: 5px 0 0 5px;
+  border-style: solid;
+}
+
+.switchButtons button:last-child {
+  border-radius: 0 5px 5px 0;
+}
+
+.switchButtons button.switchButtonSelected {
+  background: var(--background);
+  color: white;
+}
