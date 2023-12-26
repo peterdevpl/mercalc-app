@@ -1,10 +1,10 @@
 .switchButtons {
-  text-align: right;
+  padding-bottom: 0.5rem;
 }
 
 .switchButtons button {
-  background: white;
-  border-color: #808080;
+  background: #E0E0E0;
+  border-color: #A0A0A0;
   border-style: solid solid solid none;
   border-width: 1px;
   color: black;
@@ -21,6 +21,5 @@
 }
 
 .switchButtons button.switchButtonSelected {
-  background: var(--background);
-  color: white;
+  background: white;
 }
