@@ -2,6 +2,7 @@
 
 import { useOrderList } from '@/context/orderListContext';
 import buildSummary from '@/lib/stats/summaryBuilder';
+import formatMoney from '@/lib/i18n/moneyFormatter';
 import { OrdersSummary } from '@/lib/stats/summary';
 import styles from './ordersSummary.module.css';
 import SwitchButtons from '@/components/switchButtons/switchButtons';
@@ -13,26 +14,26 @@ type Figure = {
   value: string;
 }
 
-function addEurFigures(figures: Figure[], summary: OrdersSummary) {
+function addEurFigures(figures: Figure[], summary: OrdersSummary): void {
   figures.push({
     key: 'sum-eur',
     label: 'Suma EUR',
-    value: summary.totalPerCurrency.get('EUR')?.toFixed(2) ?? ''
+    value: formatMoney(summary.totalPerCurrency.get('EUR'))
   });
   figures.push({
     key: 'domestic-eur',
     label: 'Obrót w Polsce',
-    value: summary.totalDomestic.toFixed(2) + ' EUR'
+    value: formatMoney(summary.totalDomestic) + ' EUR'
   });
   figures.push({
     key: 'eu-eur',
     label: 'Obrót z krajami UE',
-    value: summary.totalWithinEU.toFixed(2) + ' EUR'
+    value: formatMoney(summary.totalWithinEU) + ' EUR'
   });
   figures.push({
     key: 'outside-eu-eur',
     label: 'Obrót poza UE',
-    value: summary.totalOutsideEU.toFixed(2) + ' EUR'
+    value: formatMoney(summary.totalOutsideEU) + ' EUR'
   });
 }
 
@@ -40,22 +41,22 @@ function addConvertedFigures(figures: Figure[], summary: OrdersSummary) {
   figures.push({
     key: 'sum-converted',
     label: 'Suma PLN',
-    value: summary.totalConvertedToLocal.toFixed(2) ?? ''
+    value: formatMoney(summary.totalConvertedToLocal)
   });
   figures.push({
     key: 'domestic-converted',
     label: 'Obrót w Polsce',
-    value: summary.totalDomesticConverted.toFixed(2) + ' PLN'
+    value: formatMoney(summary.totalDomesticConverted) + ' PLN'
   });
   figures.push({
     key: 'eu-converted',
     label: 'Obrót z krajami UE',
-    value: summary.totalWithinEUConverted.toFixed(2) + ' PLN'
+    value: formatMoney(summary.totalWithinEUConverted) + ' PLN'
   });
   figures.push({
     key: 'outside-eu-converted',
     label: 'Obrót poza UE',
-    value: summary.totalOutsideEUConverted.toFixed(2) + ' PLN'
+    value: formatMoney(summary.totalOutsideEUConverted) + ' PLN'
   });
 }
 

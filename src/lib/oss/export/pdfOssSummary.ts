@@ -1,4 +1,5 @@
 import countries from '@/lib/i18n/polishCountryNames';
+import formatMoney from '@/lib/i18n/moneyFormatter';
 import { jsPDF } from 'jspdf';
 import { OssSummary } from '@/lib/oss/ossSummary';
 
@@ -16,8 +17,8 @@ function buildRows(summary: OssSummary): any[] {
       countryId: key,
       countryName: countries.get(key),
       vatRate: value.vatRate.times(100).toString() + '%',
-      totalAmount: value.totalAmount.toFixed(2).replace('.', ','),
-      vatAmount: value.totalVat.toFixed(2).replace('.', ',')
+      totalAmount: formatMoney(value.totalAmount),
+      vatAmount: formatMoney(value.totalVat)
     });
   });
   rows.sort((a, b) => (a.countryName > b.countryName) ? 1 : -1);
@@ -45,7 +46,7 @@ export default function buildPDFOSSSummary(summary: OssSummary): Blob {
     y += 10;
   }
 
-  pdf.text('Razem VAT: ' + summary.totalVat.toFixed(2).replace('.', ',') + ' EUR', 5, y);
+  pdf.text('Razem VAT: ' + formatMoney(summary.totalVat) + ' EUR', 5, y);
 
   return pdf.output('blob');
 }

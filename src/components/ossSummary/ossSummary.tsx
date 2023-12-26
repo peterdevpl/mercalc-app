@@ -5,6 +5,7 @@ import buildPDFOSSSummary from '@/lib/oss/export/pdfOssSummary';
 import { Button, Col, Row, Table } from 'react-bootstrap';
 import countries from '@/lib/i18n/polishCountryNames';
 import downloadBlob from '@/app/downloadBlob';
+import formatMoney from '@/lib/i18n/moneyFormatter';
 import FormCheckInput from 'react-bootstrap/FormCheckInput';
 import FormCheckLabel from 'react-bootstrap/FormCheckLabel';
 import MonthYearSelector from '@/components/monthYearSelector/monthYearSelector';
@@ -29,8 +30,8 @@ export default function OssSummary() {
       countryId: key,
       countryName: countries.get(key),
       vatRate: value.vatRate.times(100).toString() + '%',
-      totalAmount: value.totalAmount.toFixed(2),
-      vatAmount: value.totalVat.toFixed(2)
+      totalAmount: formatMoney(value.totalAmount),
+      vatAmount: formatMoney(value.totalVat)
     });
   });
 
@@ -63,7 +64,7 @@ export default function OssSummary() {
         <tfoot>
           <tr>
             <td colSpan={3}>Suma</td>
-            <td>{summary.totalVat.toFixed(2)}</td>
+            <td>{formatMoney(summary.totalVat)}</td>
           </tr>
         </tfoot>
       </Table>

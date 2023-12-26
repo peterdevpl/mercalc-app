@@ -1,3 +1,4 @@
+import formatMoney from '@/lib/i18n/moneyFormatter';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 import { jsPDF } from 'jspdf';
 
@@ -32,9 +33,9 @@ export default function buildPDFInvoicesList(report: InvoicingReport): Blob {
     pdf.text(report.rows[i].rowId.toString(), columns[0], y);
     pdf.text(report.rows[i].invoiceNumber, columns[1], y);
     pdf.text(report.rows[i].date.toFormat('dd-MM-yyyy'), columns[2], y);
-    pdf.text(report.rows[i].totalEur.toFixed(2).replace('.', ','), columns[3], y);
-    pdf.text(report.rows[i].exchangeRate?.rate.toFixed(4).replace('.', ',') || '', columns[4], y);
-    pdf.text(report.rows[i].totalPln?.toFixed(2).replace('.', ',') || '', columns[5], y);
+    pdf.text(formatMoney(report.rows[i].totalEur), columns[3], y);
+    pdf.text(formatMoney(report.rows[i].exchangeRate?.rate, 4), columns[4], y);
+    pdf.text(formatMoney(report.rows[i].totalPln), columns[5], y);
 
     y += 10;
   }
@@ -43,8 +44,8 @@ export default function buildPDFInvoicesList(report: InvoicingReport): Blob {
     pdf.addPage();
     y = 10;
   }
-  pdf.text('Suma EUR: ' + report.totalEur.toFixed(2).replace('.', ','), 5, y);
-  pdf.text('Suma PLN: ' + report.totalPln.toFixed(2).replace('.', ','), 5, y + 5);
+  pdf.text('Suma EUR: ' + formatMoney(report.totalEur), 5, y);
+  pdf.text('Suma PLN: ' + formatMoney(report.totalPln), 5, y + 5);
 
   return pdf.output('blob');
 }

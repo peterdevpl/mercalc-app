@@ -1,3 +1,4 @@
+import formatMoney from '@/lib/i18n/moneyFormatter';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 import Papa from 'papaparse';
 
@@ -10,9 +11,9 @@ export default function buildCSVInvoicesList(report: InvoicingReport): Blob {
       report.rows[i].rowId.toString(),
       report.rows[i].invoiceNumber,
       report.rows[i].date.toFormat('dd-MM-yyyy'),
-      report.rows[i].totalEur.toFixed(2),
-      report.rows[i].exchangeRate?.rate.toFixed(4),
-      report.rows[i].totalPln?.toFixed(2)
+      formatMoney(report.rows[i].totalEur),
+      formatMoney(report.rows[i].exchangeRate?.rate, 4),
+      formatMoney(report.rows[i].totalPln)
     ]);
   }
 
