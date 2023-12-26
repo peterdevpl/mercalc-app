@@ -2,6 +2,7 @@ import countries from '@/lib/i18n/polishCountryNames';
 import formatMoney from '@/lib/i18n/moneyFormatter';
 import { jsPDF } from 'jspdf';
 import { OssSummary } from '@/lib/oss/ossSummary';
+import '@/fonts/Verdana-normal';
 
 function printPdfHeader(pdf: jsPDF, columns: number[]): void {
   pdf.text('Kraj', columns[0], 10);
@@ -29,6 +30,7 @@ function buildRows(summary: OssSummary): any[] {
 export default function buildPDFOSSSummary(summary: OssSummary): Blob {
   const pdf = new jsPDF();
   const columns = [5, 45, 90, 130];
+  pdf.setFont('Verdana');
   pdf.setFontSize(10);
   pdf.setLineWidth(0.1);
   pdf.setDrawColor('0.0');

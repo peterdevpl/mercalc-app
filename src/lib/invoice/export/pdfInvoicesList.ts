@@ -1,12 +1,13 @@
 import formatMoney from '@/lib/i18n/moneyFormatter';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 import { jsPDF } from 'jspdf';
+import '@/fonts/Verdana-normal';
 
 function printPdfHeader(pdf: jsPDF, columns: number[]): void
 {
   pdf.text('L.p.', columns[0], 10);
   pdf.text('Nr faktury', columns[1], 10);
-  pdf.text('Data sprzedazy', columns[2], 10);
+  pdf.text('Data sprzedaży', columns[2], 10);
   pdf.text('Kwota EUR', columns[3], 10);
   pdf.text('Kurs przewalutowania', columns[4], 10);
   pdf.text('Kwota w PLN', columns[5], 10);
@@ -15,6 +16,7 @@ function printPdfHeader(pdf: jsPDF, columns: number[]): void
 export default function buildPDFInvoicesList(report: InvoicingReport): Blob {
   const pdf = new jsPDF();
   const columns = [5, 20, 60, 90, 115, 155];
+  pdf.setFont('Verdana');
   pdf.setFontSize(10);
   pdf.setLineWidth(0.1);
   pdf.setDrawColor('0.0');
