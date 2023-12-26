@@ -28,8 +28,8 @@ export default function MonthYearSelector({ id, values, onChange }: { id: string
   }
 
   return (
-    <div>
-      <select className="form-control" id={id} onChange={onChange}>
+    <>
+      <select id={id} onChange={onChange}>
         {items.map(item => {
           return (
             <option key={item.value} value={item.value}>{item.text}</option>
@@ -37,6 +37,6 @@ export default function MonthYearSelector({ id, values, onChange }: { id: string
         })}
       </select>
       {singleYear && <span className="year">&nbsp;{singleYear}</span>}
-    </div>
+    </>
   );
 }
