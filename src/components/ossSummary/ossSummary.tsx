@@ -11,6 +11,7 @@ import FormCheckLabel from 'react-bootstrap/FormCheckLabel';
 import MonthYearSelector from '@/components/monthYearSelector/monthYearSelector';
 import { useOrderList } from '@/context/orderListContext';
 import React, { useState } from 'react';
+import styles from './ossSummary.module.css';
 
 export default function OssSummary() {
   const context = useOrderList();
@@ -40,7 +41,7 @@ export default function OssSummary() {
     rows.sort((a, b) => (a.countryName > b.countryName) ? 1 : -1);
     data = (
       <>
-      <Table striped bordered>
+      <Table striped className={styles.ossSummary}>
         <thead>
           <tr>
             <th>Kraj</th>
@@ -63,11 +64,12 @@ export default function OssSummary() {
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={3}>Suma</td>
-            <td>{formatMoney(summary.totalVat)}</td>
+            <th colSpan={3}>Suma</th>
+            <td><strong>{formatMoney(summary.totalVat)}</strong></td>
           </tr>
         </tfoot>
       </Table>
+      {summary.orderAboveOssLimit && <p>Zamówienie przekraczające limit OSS: {summary.orderAboveOssLimit}</p>}
       <div className="form-group">
         <Button variant="secondary" onClick={handlePDFExport}>Eksportuj do PDF</Button>
       </div>
@@ -79,9 +81,9 @@ export default function OssSummary() {
 
   return (
     <section>
-      <form>
+      <form className={styles.form}>
         <Row>
-          <Col>
+          <Col md={2}>
             <MonthYearSelector id="month" values={context.orderList.timeline.months} onChange={handleMonthYearChange} />
           </Col>
           <Col>
@@ -91,7 +93,6 @@ export default function OssSummary() {
         </Row>
       </form>
       {data}
-      {summary.orderAboveOssLimit && <p>Zamówienie przekraczające limit OSS: {summary.orderAboveOssLimit}</p>}
     </section>
   );
 }

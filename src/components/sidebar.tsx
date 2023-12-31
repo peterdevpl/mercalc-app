@@ -19,7 +19,7 @@ export default function Sidebar() {
           <Link href="/orders" className={`link ${pathname === '/orders' ? 'active' : ''}`}>Zamówienia</Link>
         </NavItem>
         <NavItem>
-          <Link href="/stats" className={`link ${pathname === '/stats' ? 'active' : ''}`}>Statystyki</Link>
+          <Link href="/stats" className={`link ${pathname === '/stats' ? 'active' : ''}`}>Statystyki VAT UE</Link>
         </NavItem>
         <NavItem>
           <Link href="/invoices" className={`link ${pathname === '/invoices' ? 'active' : ''}`}>Faktury</Link>

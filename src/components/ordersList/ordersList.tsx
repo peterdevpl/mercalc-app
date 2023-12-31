@@ -21,25 +21,29 @@ export default function OrdersList() {
     );
 
     return (
-      <Table striped bordered>
-        <thead>
-        <tr>
-          <th>Numer</th>
-          <th>Data</th>
-          <th>Kwota EUR</th>
-          <th>Kurs EUR/PLN</th>
-          <th>Kwota PLN</th>
-          <th>Kraj</th>
-        </tr>
-        </thead>
-        <tbody>
-        {orderRows}
-        </tbody>
-      </Table>
+      <section>
+        <Table striped>
+          <thead>
+          <tr>
+            <th>Numer</th>
+            <th>Data</th>
+            <th>Kwota EUR</th>
+            <th>Kurs EUR/PLN</th>
+            <th>Kwota PLN</th>
+            <th>Kraj</th>
+          </tr>
+          </thead>
+          <tbody>
+          {orderRows}
+          </tbody>
+        </Table>
+      </section>
     )
   } else {
     return (
-      <p>Brak zamówień na liście.</p>
+      <section>
+        <p>Brak zamówień na liście.</p>
+      </section>
     )
   }
 }

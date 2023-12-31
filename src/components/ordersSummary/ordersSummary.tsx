@@ -87,7 +87,7 @@ export default function OrdersSummary() {
 
   return (
     <>
-      {figures.length > 0 && <section>
+      {figures.length > 0 && <div>
         <SwitchButtons options={currencies} selected={currency} onChange={handleCurrencyChange} />
         <div className={styles.stats}>
           {figures.map(figure => (
@@ -97,7 +97,7 @@ export default function OrdersSummary() {
             </div>
             ))}
         </div>
-      </section>}
+      </div>}
     </>
   )
 }
