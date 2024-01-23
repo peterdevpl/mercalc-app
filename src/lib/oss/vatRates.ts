@@ -18,7 +18,7 @@ vatRates.set('IE', new Decimal('0.23'));
 vatRates.set('IT', new Decimal('0.22'));
 vatRates.set('LV', new Decimal('0.21'));
 vatRates.set('LT', new Decimal('0.21'));
-vatRates.set('LU', new Decimal('0.16'));
+vatRates.set('LU', new Decimal('0.17'));
 vatRates.set('MT', new Decimal('0.18'));
 vatRates.set('NL', new Decimal('0.21'));
 vatRates.set('PL', new Decimal('0.23'));
