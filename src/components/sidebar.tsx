@@ -24,6 +24,9 @@ export default function Sidebar() {
         <NavItem>
           <Link href="/invoices" className={`link ${pathname === '/invoices' ? 'active' : ''}`}>Faktury</Link>
         </NavItem>
+        <NavItem>
+          <Link href="/help" className={`link ${pathname === '/help' ? 'active' : ''}`}>Pomoc</Link>
+        </NavItem>
       </Nav>
     </>
   )
