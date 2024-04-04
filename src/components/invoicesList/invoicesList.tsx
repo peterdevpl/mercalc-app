@@ -33,10 +33,10 @@ export default function InvoicesList({ report }: { report: InvoicingReport }) {
       </tbody>
       <tfoot>
         <tr>
-          <td colSpan={3}>Suma</td>
-          <td>EUR {formatMoney(report.totalEur)}</td>
+          <th colSpan={3}>Suma</th>
+          <td><strong>EUR {formatMoney(report.totalEur)}</strong></td>
           <td></td>
-          <td>PLN {formatMoney(report.totalPln)}</td>
+          <td><strong>PLN {formatMoney(report.totalPln)}</strong></td>
           <td></td>
         </tr>
       </tfoot>
