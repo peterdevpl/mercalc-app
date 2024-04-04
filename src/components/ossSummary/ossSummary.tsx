@@ -15,6 +15,9 @@ import styles from './ossSummary.module.css';
 
 export default function OssSummary() {
   const context = useOrderList();
+  const [ monthYear, setMonthYear ] = useState(context.orderList.timeline.months[context.orderList.timeline.months.length - 1]);
+  const [ isAlreadyOss, setIsAlreadyOss ] = useState(false);
+
   if (!context.orderList.orders.length) {
     return (
       <section>
@@ -23,8 +26,6 @@ export default function OssSummary() {
     )
   }
 
-  const [ monthYear, setMonthYear ] = useState(context.orderList.timeline.months[context.orderList.timeline.months.length - 1]);
-  const [ isAlreadyOss, setIsAlreadyOss ] = useState(false);
   const summary = buildOssSummary(context.orderList.orders, monthYear, isAlreadyOss);
   const handleMonthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => setMonthYear(event.currentTarget.value);  // todo wrap the event, so we dont have to know if it's a select element
   const handleIsAlreadyOssChange = (event: React.ChangeEvent<HTMLInputElement>) => setIsAlreadyOss(event.currentTarget.checked);

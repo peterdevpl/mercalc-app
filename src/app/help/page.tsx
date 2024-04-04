@@ -20,7 +20,7 @@ export default function Help() {
           <li>Zaloguj się do swojego sklepu Etsy. Kliknij <strong>Account settings</strong> w prawym górnym rogu.</li>
           <li>W menu z lewej strony wybierz <strong>Settings</strong> i <strong>Options</strong>. Kliknij zakładkę <strong>Download Data</strong>.</li>
           <li>W dolnej ramce z przyciskiem <strong>Download CSV</strong> wybierz typ raportu: <strong>Order Items</strong>. Następnie wybierz rok, nie wybieraj miesiąca.</li>
-          <li>Kliknij przycisk <strong>Download CSV</strong>. Otrzymasz na maila link do pobrania pliku. Zapisz plik na komputerze, a następnie wklej go tutaj <Link href="/">w zakładce "Przegląd"</Link>.</li>
+          <li>Kliknij przycisk <strong>Download CSV</strong>. Otrzymasz na maila link do pobrania pliku. Zapisz plik na komputerze, a następnie wklej go tutaj <Link href="/">w zakładce <em>Przegląd</em></Link>.</li>
         </ol>
       </section>
     </>
