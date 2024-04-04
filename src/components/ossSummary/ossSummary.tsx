@@ -15,6 +15,14 @@ import styles from './ossSummary.module.css';
 
 export default function OssSummary() {
   const context = useOrderList();
+  if (!context.orderList.orders.length) {
+    return (
+      <section>
+        <p>Brak zamówień na liście.</p>
+      </section>
+    )
+  }
+
   const [ monthYear, setMonthYear ] = useState(context.orderList.timeline.months[context.orderList.timeline.months.length - 1]);
   const [ isAlreadyOss, setIsAlreadyOss ] = useState(false);
   const summary = buildOssSummary(context.orderList.orders, monthYear, isAlreadyOss);

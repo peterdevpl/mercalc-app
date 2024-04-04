@@ -62,7 +62,7 @@ export default function Invoices() {
       </>
     );
   } else {
-    contents = <p>Brak zamówień na liście.</p>;
+    contents = <section><p>Brak zamówień na liście.</p></section>;
   }
 
   return (
