@@ -75,7 +75,7 @@ countries.set('Micronesia (Federated States of)', 'FM');
 countries.set('Faroe Islands', 'FO');
 countries.set('France', 'FR');
 countries.set('Gabon', 'GA');
-countries.set('United Kingdom of Great Britain and Northern Ireland', 'GB');
+countries.set('United Kingdom', 'GB');
 countries.set('Grenada', 'GD');
 countries.set('Georgia', 'GE');
 countries.set('French Guiana', 'GF');
