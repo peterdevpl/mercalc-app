@@ -24,6 +24,7 @@ export default function buildOssSummary(orders: IOrder[], monthYear: string, isA
   let totalWithinEU = zero;
   let countOrder = false;
   let vatRate: Decimal;
+  let vatDivider: Decimal;
 
   for (let i = 0; i < orders.length; i++) {
     if (orders[i].date.substring(0, 4) !== year) {
@@ -50,8 +51,10 @@ export default function buildOssSummary(orders: IOrder[], monthYear: string, isA
 
     if (countOrder) {
       vatRate = vatRates.get(orders[i].country) || zero;
-      const vatAmount = orders[i].total.times(vatRate);
-      summary.totalVat = summary.totalVat.add(vatAmount);
+      vatDivider = vatRate.add(1);
+      const net = orders[i].total.div(vatDivider).toDecimalPlaces(2);
+      const vatAmount = orders[i].total.sub(net);
+      summary.totalVat = summary.totalVat.add(vatAmount);  // this should go into some main invoice builder
       let countrySummary = summary.countries.get(orders[i].country);
       if (countrySummary === undefined) {
         countrySummary = {
