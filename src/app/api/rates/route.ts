@@ -16,6 +16,8 @@ type NBPRates = {
   rates: NBPRate[];
 };
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   const filePath = path.resolve('rates-nbp.json');
   const ratesData = fs.readFileSync(filePath);
