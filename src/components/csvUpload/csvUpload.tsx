@@ -29,7 +29,7 @@ export default function CsvUpload() {
         });
       }
     };
-    reader.readAsBinaryString(files[0]);
+    reader.readAsText(files[0]);
   }
 
   return (
