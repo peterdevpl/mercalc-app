@@ -4,7 +4,8 @@ import formatPercent from '@/lib/i18n/percentFormatter';
 import { Invoice } from '@/lib/invoice/invoice';
 import { jsPDF } from 'jspdf';
 import polishCountryNames from '@/lib/i18n/polishCountryNames';
-import '@/fonts/Verdana-normal';
+import '@/fonts/OpenSans-bold';
+import '@/fonts/OpenSans-normal';
 
 const fontYOffset = 2.6;  // pdf.text() "y" argument is the font baseline, so we need an offset for the top line to be at "y"
 
@@ -13,39 +14,50 @@ type Column = {
   align: 'left'|'center'|'right';
 };
 
-function printIssueHeader(pdf: jsPDF): void {
+function printIssueHeader(pdf: jsPDF, invoice: Invoice): void {
   pdf.setFillColor('0.875');
   pdf.rect(123.6, 12, 74.4, 7.5, 'F');
   pdf.line(123.6, 12, 198, 12);
-  pdf.text('Miejsce wystawienia', 144.7, 15.4 + fontYOffset);
+  pdf.text('Miejsce wystawienia', 144.7, 14.9 + fontYOffset);
 
   pdf.setFillColor('0.875');
   pdf.rect(123.6, 27, 74.4, 7.5, 'F');
   pdf.line(123.6, 27, 198, 27);
-  pdf.text('Data wystawienia', 147, 30 + fontYOffset);
+  pdf.text('Data wystawienia', 147, 29.5 + fontYOffset);
 
   pdf.setFillColor('0.875');
   pdf.rect(123.6, 42, 74.4, 7.5, 'F');
   pdf.line(123.6, 42, 198, 42);
-  pdf.text('Data sprzedaży', 148.5, 44.8 + fontYOffset);
+  pdf.text('Data sprzedaży', 148.5, 44.3 + fontYOffset);
+
+  pdf.setFont('OpenSans', 'normal', 'bold');
+  let textX = 160.8 - pdf.getTextWidth(invoice.issuer.issueLocation) / 2;
+  pdf.text(invoice.issuer.issueLocation, textX, 21.8 + fontYOffset);
+  const invoiceDate = invoice.date.toFormat('dd-MM-yyyy');
+  textX = 160.8 - pdf.getTextWidth(invoiceDate) / 2;
+  pdf.text(invoiceDate, textX, 36.7 + fontYOffset);
+  pdf.text(invoiceDate, textX, 51.5 + fontYOffset);
+  pdf.setFont('OpenSans', 'normal', 'normal');
 }
 
 function printContractors(pdf: jsPDF, invoice: Invoice): void {
   const lineHeight = 6.3;
   let y = 66.2;
+  pdf.setFont('OpenSans', 'normal', 'bold');
 
   pdf.setFillColor('0.875');
   pdf.rect(12, y, 83.7, 7.5, 'F');
   pdf.line(12, y, 95.7, y);
-  pdf.text('Sprzedawca', 43.5, 69.5 + fontYOffset);
+  pdf.text('Sprzedawca', 43.5, 69 + fontYOffset);
 
   pdf.setFillColor('0.875');
   pdf.rect(114.3, y, 83.7, 7.5, 'F');
   pdf.line(114.3, y, 198, y);
-  pdf.text('Nabywca', 148.3, 69.5 + fontYOffset);
+  pdf.text('Nabywca', 148.3, 69 + fontYOffset);
 
   y += 10;
 
+  pdf.setFont('OpenSans', 'normal', 'normal');
   pdf.text(invoice.issuer.name, 12, y + fontYOffset);
   pdf.text('NIP: ' + invoice.issuer.vatId, 12, y + lineHeight + fontYOffset);
   pdf.text(invoice.issuer.street, 12, y + lineHeight * 2 + fontYOffset);
@@ -58,7 +70,13 @@ function printContractors(pdf: jsPDF, invoice: Invoice): void {
 }
 
 function printDocumentName(pdf: jsPDF, invoice: Invoice): void {
-  pdf.text(invoice.invoiceType + ' ' + invoice.invoiceNumber, 64, 112.8 + fontYOffset);
+  const text = invoice.invoiceType + ' ' + invoice.invoiceNumber;
+  pdf.setFont('OpenSans', 'normal', 'bold');
+  pdf.setFontSize(15);
+  const x = 105 - pdf.getTextWidth(text) / 2;
+  pdf.text(text, x, 112.8 + fontYOffset);
+  pdf.setFont('OpenSans', 'normal', 'normal');
+  pdf.setFontSize(10);
 }
 
 function printTableRow(pdf: jsPDF, columns: Column[], text: string[], x: number, y: number, height: number, padding: number, header: boolean = false): void {
@@ -123,7 +141,7 @@ function printTable(pdf: jsPDF, invoice: Invoice): number {
     const itemText: string[] = [
       invoice.items[i].rowId.toString(),
       invoice.items[i].name,
-      'kpl.',
+      invoice.items[i].unit,
       invoice.items[i].quantity.toString(),
       formatMoney(invoice.items[i].unitPrice),
       formatMoney(invoice.items[i].totalNet),
@@ -140,7 +158,11 @@ function printTable(pdf: jsPDF, invoice: Invoice): number {
   x = 12 + colspanWidth;
   pdf.line(12, y, x, y);
 
-  pdf.text('W tym', 106.3, y + fontYOffset);
+  pdf.setFont('OpenSans', 'normal', 'bold');
+  pdf.text('W tym', 108.5, y + rowHeight - padding * 2);
+  pdf.text('Razem', 108.4, y + rowHeight * 2 - padding * 2);
+  pdf.setFont('OpenSans', 'normal', 'normal');
+
   const vatText: string[] = [
     formatMoney(invoice.totalNetEur),
     formatPercent(invoice.items[0].vatRate),
@@ -150,7 +172,6 @@ function printTable(pdf: jsPDF, invoice: Invoice): number {
   printTableRow(pdf, summaryColumns, vatText, x, y, rowHeight, padding);
   y += rowHeight;
 
-  pdf.text('Razem', 106.1, y + fontYOffset);
   const totalText: string[] = [
     formatMoney(invoice.totalNetEur),
     '',
@@ -166,11 +187,16 @@ function printTable(pdf: jsPDF, invoice: Invoice): number {
 
 function printPaymentInfo(pdf: jsPDF, invoice: Invoice, y: number): void {
   const lineHeight = 6.3;
+  pdf.setFont('OpenSans', 'normal', 'bold');
   pdf.text('Zapłacono ' + formatMoney(invoice.totalEur) + ' EUR', 12, y + fontYOffset);
+  pdf.text('Do zapłaty 0,00 EUR', 123.6, y + fontYOffset);
+
+  pdf.setFont('OpenSans', 'normal', 'normal');
   pdf.text('Data płatności: ' + invoice.date.toFormat('dd-MM-yyyy'), 12, y + lineHeight + fontYOffset);
   pdf.text('Sposób płatności: przelew', 12, y + lineHeight * 2 + fontYOffset);
-  pdf.text('bank', 12, y + lineHeight * 3 + fontYOffset);
-  pdf.text('bank account', 12, y + lineHeight * 4 + fontYOffset);
+  pdf.text(invoice.issuer.bankName, 12, y + lineHeight * 3 + fontYOffset);
+  pdf.text(invoice.issuer.bankAccount, 12, y + lineHeight * 4 + fontYOffset);
+  pdf.text('Słownie zero 00/100 EUR', 123.6, y + lineHeight + fontYOffset);
 
   if (invoice.exchangeRate) {
     const rateDate = DateTime.fromISO(invoice.exchangeRate.date).toFormat('dd-MM-yyyy');
@@ -184,14 +210,14 @@ function printPaymentInfo(pdf: jsPDF, invoice: Invoice, y: number): void {
 }
 
 export default function buildPDFInvoice(invoice: Invoice): Blob {
-  const pdf = new jsPDF({ unit: 'mm' });
-  pdf.setFont('Verdana');
+  const pdf = new jsPDF({ unit: 'mm', compress: true });
+  pdf.setFont('OpenSans');
   pdf.setFontSize(10);
-  pdf.setLineWidth(0.1);
+  pdf.setLineWidth(0.265);
   pdf.setDrawColor('0.0');
   pdf.setFillColor('0.875');
 
-  printIssueHeader(pdf);
+  printIssueHeader(pdf, invoice);
   printContractors(pdf, invoice);
   printDocumentName(pdf, invoice);
   let y = printTable(pdf, invoice);

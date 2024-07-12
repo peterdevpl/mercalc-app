@@ -1,6 +1,6 @@
 'use client';
 
-import countries from '@/lib/i18n/polishCountryNames';
+import polishCountryNames from '@/lib/i18n/polishCountryNames';
 import formatMoney from '@/lib/i18n/moneyFormatter';
 import { Table } from 'react-bootstrap';
 import { useOrderList } from '@/context/orderListContext';
@@ -16,7 +16,7 @@ export default function OrdersList() {
         <td>{formatMoney(order.total)}</td>
         <td>{formatMoney(order.rate?.rate, 4)}</td>
         <td>{formatMoney(order.totalConverted)}</td>
-        <td>{countries.get(order.country) || ''}</td>
+        <td>{polishCountryNames.get(order.country) || ''}</td>
       </tr>
     );
 

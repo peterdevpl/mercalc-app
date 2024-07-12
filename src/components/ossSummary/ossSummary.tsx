@@ -3,7 +3,7 @@
 import buildOssSummary from '@/lib/oss/ossSummaryBuilder';
 import buildPDFOSSSummary from '@/lib/oss/export/pdfOssSummary';
 import { Button, Col, Row, Table } from 'react-bootstrap';
-import countries from '@/lib/i18n/polishCountryNames';
+import polishCountryNames from '@/lib/i18n/polishCountryNames';
 import downloadBlob from '@/app/downloadBlob';
 import formatMoney from '@/lib/i18n/moneyFormatter';
 import FormCheckInput from 'react-bootstrap/FormCheckInput';
@@ -38,7 +38,7 @@ export default function OssSummary() {
   summary.countries.forEach((value, key) => {
     rows.push({
       countryId: key,
-      countryName: countries.get(key),
+      countryName: polishCountryNames.get(key),
       vatRate: value.vatRate.times(100).toString() + '%',
       totalAmount: formatMoney(value.totalAmount),
       vatAmount: formatMoney(value.totalVat)

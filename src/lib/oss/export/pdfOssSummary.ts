@@ -1,4 +1,4 @@
-import countries from '@/lib/i18n/polishCountryNames';
+import polishCountryNames from '@/lib/i18n/polishCountryNames';
 import formatMoney from '@/lib/i18n/moneyFormatter';
 import { jsPDF } from 'jspdf';
 import { OssSummary } from '@/lib/oss/ossSummary';
@@ -16,7 +16,7 @@ function buildRows(summary: OssSummary): any[] {
   summary.countries.forEach((value, key) => {
     rows.push({
       countryId: key,
-      countryName: countries.get(key),
+      countryName: polishCountryNames.get(key),
       vatRate: value.vatRate.times(100).toString() + '%',
       totalAmount: formatMoney(value.totalAmount),
       vatAmount: formatMoney(value.totalVat)
@@ -28,7 +28,7 @@ function buildRows(summary: OssSummary): any[] {
 }
 
 export default function buildPDFOSSSummary(summary: OssSummary): Blob {
-  const pdf = new jsPDF();
+  const pdf = new jsPDF({ unit: 'mm', compress: true });
   const columns = [5, 45, 90, 130];
   pdf.setFont('Verdana');
   pdf.setFontSize(10);

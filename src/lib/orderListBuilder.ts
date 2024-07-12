@@ -44,7 +44,7 @@ function convertCurrency(orders: IOrder[], rates: ExchangeRate[])
         sourceDescription: result.value.sourceDescription,
         rate: new Decimal(result.value.rate),  // JSON parser does not create an instance of Decimal
       };
-      order.totalConverted = order.total.mul(result.value.rate);
+      order.totalConverted = order.total.mul(result.value.rate).toDecimalPlaces(2);
     }
     // todo: error handling
   }
