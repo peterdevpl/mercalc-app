@@ -1,6 +1,7 @@
 import { IOrder, IOrderItem } from '@/lib/orderList';
 import { DateTime } from 'luxon';
 import countries from '@/lib/import/countryNameParser';
+import * as he from 'he';
 import polishCountryNames from '@/lib/i18n/polishCountryNames';
 import Decimal from 'decimal.js';
 
@@ -98,9 +99,10 @@ function buildFreshOrder(row: EtsyCsvRow): IOrder
     id: row.orderId,
     date: DateTime.fromFormat(row.date, 'MM/dd/yy').toISODate() || '',  // todo error handling
     buyer: {
-      name: row.shipName.trim(),
-      street: (row.shipAddress1 + ' ' + row.shipAddress2).trim(),
-      cityCountry: buildCityCountry(countryCode, row)
+      // Etsy may provide encoded HTML entities instead of simple characters like apostrophe
+      name: he.decode(row.shipName.trim()),
+      street: he.decode((row.shipAddress1 + ' ' + row.shipAddress2).trim()),
+      cityCountry: he.decode(buildCityCountry(countryCode, row))
     },
     discount: new Decimal(0),
     shipping: new Decimal(0),
