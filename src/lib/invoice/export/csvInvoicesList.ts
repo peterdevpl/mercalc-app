@@ -17,6 +17,6 @@ export default function buildCSVInvoicesList(report: InvoicingReport): Blob {
     ]);
   }
 
-  const csv = Papa.unparse(rows);
+  const csv = Papa.unparse(rows, { delimiter: "\t" });
   return new Blob([csv], {type: 'text/csv'});
 }
