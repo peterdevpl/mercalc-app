@@ -88,21 +88,30 @@ function printTableRow(pdf: jsPDF, columns: Column[], text: string[], x: number,
 
   pdf.line(x, y, 198, y);
   let columnX = x;
+  let textX;
+  let textY;
+  let lines;
   for (let i = 0; i < columns.length; i++) {
-    let textX;
-    if (!header && columns[i].align === 'left') {
-      textX = columnX + padding;
-    } else {
-      const textWidth = pdf.getTextWidth(text[i]);
-      textX = (!header && columns[i].align === 'right') ? columnX + columns[i].width - padding - textWidth
-        : columnX + columns[i].width / 2 - textWidth / 2;
+    lines = text[i].split('|');
+    textY = y + height / (lines.length + 1) + fontYOffset / 2;
+
+    for (let j = 0; j < lines.length; j++) {
+      // header cells are always centered
+      if (!header && columns[i].align === 'left') {
+        textX = columnX + padding;
+      } else {
+        const textWidth = pdf.getTextWidth(lines[j]);
+        textX = (!header && columns[i].align === 'right') ? columnX + columns[i].width - padding - textWidth
+          : columnX + columns[i].width / 2 - textWidth / 2;
+      }
+      pdf.text(lines[j], textX, textY);
+      textY += 5;
     }
 
-    pdf.text(text[i], textX, y + height - padding * 2);
     pdf.line(columnX, y, columnX, y + height);
-
     columnX += columns[i].width;
   }
+
   pdf.line(columnX, y, columnX, y + height);
 
   if (header) {
@@ -164,8 +173,8 @@ function printTable(pdf: jsPDF, invoice: Invoice): number {
   pdf.line(12, y, x, y);
 
   pdf.setFont('OpenSans', 'normal', 'bold');
-  pdf.text('W tym', 108.5, y + rowHeight - padding * 2);
-  pdf.text('Razem', 108.4, y + rowHeight * 2 - padding * 2);
+  pdf.text('W tym', 108.5, y + rowHeight / 2 + fontYOffset / 2);
+  pdf.text('Razem', 108.4, y + rowHeight * 1.5 + fontYOffset / 2);
   pdf.setFont('OpenSans', 'normal', 'normal');
 
   const vatText: string[] = [
