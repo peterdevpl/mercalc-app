@@ -11,8 +11,9 @@ import InvoicesList from '@/components/invoicesList/invoicesList';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 import MonthYearSelector from '@/components/monthYearSelector/monthYearSelector';
 import { useOrderList } from '@/context/orderListContext';
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 
+const STORAGE_COMPANY_DATA = 'companyData';
 const STORAGE_INVOICE_PREFIX = 'invoicePrefix';
 const STORAGE_INVOICE_SUFFIX = 'invoiceSuffix';
 
@@ -32,12 +33,24 @@ function buildDefaultCompanyData(): CompanyData {
 export default function Invoices() {
   const context = useOrderList();
 
+  const defaultSuffix = '/' + new Date().getFullYear();
   const [ monthYear, setMonthYear ] = useState(context.orderList.timeline.months[context.orderList.timeline.months.length - 1]);
-  const [ prefix, setPrefix ] = useState(localStorage?.getItem(STORAGE_INVOICE_PREFIX) || 'FR/');
+  const [ prefix, setPrefix ] = useState('FR/');
   const [ report, setReport ] = useState<InvoicingReport | null>(null);
   const [ start, setStart ] = useState('1');
-  const [ suffix, setSuffix ] = useState(localStorage?.getItem(STORAGE_INVOICE_SUFFIX) || '/' + new Date().getFullYear());
+  const [ suffix, setSuffix ] = useState(defaultSuffix);
   const [ companyData, setCompanyData ] = useState<CompanyData>(buildDefaultCompanyData());
+
+  useEffect(() => {
+    setPrefix(window.localStorage?.getItem(STORAGE_INVOICE_PREFIX) || 'FR/');
+    setSuffix(window.localStorage?.getItem(STORAGE_INVOICE_SUFFIX) || defaultSuffix);
+    const rememberedCompanyData = window.localStorage?.getItem(STORAGE_COMPANY_DATA);
+    if (rememberedCompanyData) {
+      try {
+        setCompanyData(JSON.parse(rememberedCompanyData));
+      } catch (error) {}
+    }
+  }, []);
 
   let contents;
   if (context.orderList.orders.length > 0) {
@@ -46,9 +59,15 @@ export default function Invoices() {
       setReport(buildInvoicingReport(context.orderList.orders, monthYear, companyData, prefix, parseInt(start), suffix));
     }
     const handleMonthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => setMonthYear(event.currentTarget.value);  // todo wrap the event, so we dont have to know if it's a select element
-    const handlePrefixChange = (event: React.ChangeEvent<HTMLInputElement>) => setPrefix(event.currentTarget.value);
+    const handlePrefixChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      window.localStorage?.setItem(STORAGE_INVOICE_PREFIX, event.currentTarget.value);
+      setPrefix(event.currentTarget.value);
+    }
     const handleStartChange = (event: React.ChangeEvent<HTMLInputElement>) => setStart(event.currentTarget.value);
-    const handleSuffixChange = (event: React.ChangeEvent<HTMLInputElement>) => setSuffix(event.currentTarget.value);
+    const handleSuffixChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      window.localStorage?.setItem(STORAGE_INVOICE_SUFFIX, event.currentTarget.value);
+      setSuffix(event.currentTarget.value);
+    }
 
     const handleCompanyDataChange = (field: string, value: string) => {
       const newData = structuredClone(companyData);
@@ -61,6 +80,7 @@ export default function Invoices() {
         case 'bankName': newData.bankName = value; break;
         case 'bankAccount': newData.bankAccount = value; break;
       }
+      window.localStorage?.setItem(STORAGE_COMPANY_DATA, JSON.stringify(newData));
       setCompanyData(newData);
     };
 
