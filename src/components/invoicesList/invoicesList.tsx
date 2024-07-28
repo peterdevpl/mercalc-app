@@ -1,10 +1,19 @@
-import countries from '@/lib/i18n/polishCountryNames';
+import buildPDFInvoice from '@/lib/invoice/export/pdfInvoice';
+import downloadBlob from '@/app/downloadBlob';
 import formatMoney from '@/lib/i18n/moneyFormatter';
+import { Invoice } from '@/lib/invoice/invoice';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 import { Table } from 'react-bootstrap';
 import React from 'react';
 
 export default function InvoicesList({ report }: { report: InvoicingReport }) {
+  const handleInvoice = (invoice: Invoice) => {
+    const filename = (invoice.invoiceType + ' ' + invoice.invoiceNumber)
+      .toLowerCase()
+      .replace(/[\s\/]/g, '-');
+    downloadBlob(buildPDFInvoice(invoice), filename + '.pdf');
+  };
+
   return (
     <Table striped bordered>
       <thead>
@@ -15,7 +24,7 @@ export default function InvoicesList({ report }: { report: InvoicingReport }) {
           <th>Kwota EUR</th>
           <th>Kurs przewalutowania</th>
           <th>Kwota PLN</th>
-          <th>Kraj</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -27,7 +36,7 @@ export default function InvoicesList({ report }: { report: InvoicingReport }) {
           <td>{formatMoney(row.totalEur)}</td>
           <td>{formatMoney(row.exchangeRate?.rate, 4)}</td>
           <td>{formatMoney(row.totalPln)}</td>
-          <td>{countries.get(row.country)}</td>
+          <td><button onClick={() => handleInvoice(row.invoice)}>F</button></td>
         </tr>
       ))}
       </tbody>
