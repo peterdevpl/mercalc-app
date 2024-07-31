@@ -31,8 +31,8 @@ function printIssueHeader(pdf: jsPDF, invoice: Invoice): void {
   pdf.text('Data sprzedaży', 148.5, 44.3 + fontYOffset);
 
   pdf.setFont('OpenSans', 'normal', 'bold');
-  let textX = 160.8 - pdf.getTextWidth(invoice.issuer.issueLocation) / 2;
-  pdf.text(invoice.issuer.issueLocation, textX, 21.8 + fontYOffset);
+  let textX = 160.8 - pdf.getTextWidth(invoice.issuer.city) / 2;
+  pdf.text(invoice.issuer.city, textX, 21.8 + fontYOffset);
   const invoiceDate = invoice.date.toFormat('dd-MM-yyyy');
   textX = 160.8 - pdf.getTextWidth(invoiceDate) / 2;
   pdf.text(invoiceDate, textX, 36.7 + fontYOffset);
