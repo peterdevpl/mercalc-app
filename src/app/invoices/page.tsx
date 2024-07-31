@@ -2,11 +2,13 @@
 
 import buildInvoicingReport from '@/lib/invoice/invoicingReport';
 import buildCSVInvoicesList from '@/lib/invoice/export/csvInvoicesList';
+import buildPDFInvoice from '@/lib/invoice/export/pdfInvoice';
 import buildPDFInvoicesList from '@/lib/invoice/export/pdfInvoicesList';
 import { Button } from 'react-bootstrap';
 import { CompanyData } from '@/lib/invoice/companyData';
 import CompanyDataForm from '@/components/invoicesList/companyDataForm';
 import downloadBlob from '@/app/downloadBlob';
+import { Invoice } from '@/lib/invoice/invoice';
 import InvoicesList from '@/components/invoicesList/invoicesList';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 import MonthYearSelector from '@/components/monthYearSelector/monthYearSelector';
@@ -28,6 +30,13 @@ function buildDefaultCompanyData(): CompanyData {
     bankName: '',
     bankAccount: ''
   };
+}
+
+function downloadInvoice(invoice: Invoice) {
+  const filename = (invoice.invoiceType + ' ' + invoice.invoiceNumber)
+    .toLowerCase()
+    .replace(/[\s\/]/g, '-');
+  downloadBlob(buildPDFInvoice(invoice), filename + '.pdf');
 }
 
 export default function Invoices() {
@@ -96,6 +105,12 @@ export default function Invoices() {
       }
     };
 
+    const handleDownloadAllPDF = () => {
+      if (report) {
+        report.rows.forEach((row) => downloadInvoice(row.invoice));
+      }
+    };
+
     contents = (
       <>
         <section>
@@ -115,8 +130,9 @@ export default function Invoices() {
         {report && <section>
           <InvoicesList report={report} />
           <div className="form-group">
-            <Button variant="secondary" onClick={handlePDFExport}>Eksportuj do PDF</Button>
-            <Button variant="secondary" onClick={handleCSVExport}>Eksportuj do CSV</Button>
+            <Button variant="secondary" onClick={handlePDFExport}>Eksportuj raport do PDF</Button>
+            <Button variant="secondary" onClick={handleCSVExport}>Eksportuj raport do CSV</Button>
+            <Button variant="warning" onClick={handleDownloadAllPDF}>Pobierz wszystkie faktury</Button>
           </div>
         </section>}
       </>
