@@ -1,5 +1,6 @@
 'use client';
 
+import { BlobReader, BlobWriter, EntryMetaData, ZipWriter } from '@zip.js/zip.js';
 import buildInvoicingReport from '@/lib/invoice/invoicingReport';
 import buildCSVInvoicesList from '@/lib/invoice/export/csvInvoicesList';
 import buildPDFInvoice from '@/lib/invoice/export/pdfInvoice';
@@ -32,11 +33,23 @@ function buildDefaultCompanyData(): CompanyData {
   };
 }
 
-function downloadInvoice(invoice: Invoice) {
-  const filename = (invoice.invoiceType + ' ' + invoice.invoiceNumber)
+function getInvoiceFilename(invoice: Invoice): string {
+  return (invoice.invoiceType + ' ' + invoice.invoiceNumber)
     .toLowerCase()
-    .replace(/[\s\/]/g, '-');
-  downloadBlob(buildPDFInvoice(invoice), filename + '.pdf');
+    .replace(/[\s\/]/g, '-') + '.pdf';
+}
+
+async function buildZipFile(report: InvoicingReport) {
+  const zipWriter = new ZipWriter(new BlobWriter('application/zip'));
+  const files: Promise<EntryMetaData>[] = [];
+
+  report.rows.forEach((row) => files.push(
+    zipWriter.add(getInvoiceFilename(row.invoice), new BlobReader(buildPDFInvoice(row.invoice)))
+  ));
+
+  await Promise.all(files);
+
+  return zipWriter.close();
 }
 
 export default function Invoices() {
@@ -107,7 +120,7 @@ export default function Invoices() {
 
     const handleDownloadAllPDF = () => {
       if (report) {
-        report.rows.forEach((row) => downloadInvoice(row.invoice));
+        buildZipFile(report).then((blob) => downloadBlob(blob, 'faktury-' + monthYear + '.zip'));
       }
     };
 
