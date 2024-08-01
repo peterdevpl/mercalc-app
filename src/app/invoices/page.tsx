@@ -64,8 +64,8 @@ export default function Invoices() {
   const [ companyData, setCompanyData ] = useState<CompanyData>(buildDefaultCompanyData());
 
   useEffect(() => {
-    setPrefix(window.localStorage?.getItem(STORAGE_INVOICE_PREFIX) || 'FR/');
-    setSuffix(window.localStorage?.getItem(STORAGE_INVOICE_SUFFIX) || defaultSuffix);
+    setPrefix(window.localStorage?.getItem(STORAGE_INVOICE_PREFIX) ?? 'FR/');
+    setSuffix(window.localStorage?.getItem(STORAGE_INVOICE_SUFFIX) ?? defaultSuffix);
     const rememberedCompanyData = window.localStorage?.getItem(STORAGE_COMPANY_DATA);
     if (rememberedCompanyData) {
       try {
