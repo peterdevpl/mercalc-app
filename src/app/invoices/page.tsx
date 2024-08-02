@@ -17,6 +17,7 @@ import { useOrderList } from '@/context/orderListContext';
 import React, { FormEvent, useEffect, useState } from 'react';
 
 const STORAGE_COMPANY_DATA = 'companyData';
+const STORAGE_INVOICE_TYPE = 'invoiceType';
 const STORAGE_INVOICE_PREFIX = 'invoicePrefix';
 const STORAGE_INVOICE_SUFFIX = 'invoiceSuffix';
 
@@ -57,6 +58,7 @@ export default function Invoices() {
 
   const defaultSuffix = '/' + new Date().getFullYear();
   const [ monthYear, setMonthYear ] = useState(context.orderList.timeline.months[context.orderList.timeline.months.length - 1]);
+  const [ type, setType ] = useState('Faktura VAT');
   const [ prefix, setPrefix ] = useState('FR/');
   const [ report, setReport ] = useState<InvoicingReport | null>(null);
   const [ start, setStart ] = useState('1');
@@ -64,6 +66,7 @@ export default function Invoices() {
   const [ companyData, setCompanyData ] = useState<CompanyData>(buildDefaultCompanyData());
 
   useEffect(() => {
+    setType(window.localStorage?.getItem(STORAGE_INVOICE_TYPE) || 'Faktura VAT');
     setPrefix(window.localStorage?.getItem(STORAGE_INVOICE_PREFIX) ?? 'FR/');
     setSuffix(window.localStorage?.getItem(STORAGE_INVOICE_SUFFIX) ?? defaultSuffix);
     const rememberedCompanyData = window.localStorage?.getItem(STORAGE_COMPANY_DATA);
@@ -78,9 +81,13 @@ export default function Invoices() {
   if (context.orderList.orders.length > 0) {
     const buildInvoiceList = (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      setReport(buildInvoicingReport(context.orderList.orders, monthYear, companyData, prefix, parseInt(start), suffix));
+      setReport(buildInvoicingReport(context.orderList.orders, monthYear, companyData, type, prefix, parseInt(start), suffix));
     }
     const handleMonthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => setMonthYear(event.currentTarget.value);  // todo wrap the event, so we dont have to know if it's a select element
+    const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      window.localStorage?.setItem(STORAGE_INVOICE_TYPE, event.currentTarget.value);
+      setType(event.currentTarget.value);
+    }
     const handlePrefixChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       window.localStorage?.setItem(STORAGE_INVOICE_PREFIX, event.currentTarget.value);
       setPrefix(event.currentTarget.value);
@@ -133,8 +140,9 @@ export default function Invoices() {
           <form onSubmit={buildInvoiceList}>
             <div>
               <MonthYearSelector id="invoice-month" values={context.orderList.timeline.months} onChange={handleMonthYearChange} />
+              <input type="text" id="invoice-type" value={type} required={true} onChange={handleTypeChange} />
               <input type="text" id="invoice-prefix" value={prefix} onChange={handlePrefixChange} />
-              <input type="number" id="invoice-start" value={start} onChange={handleStartChange} />
+              <input type="number" id="invoice-start" value={start} required={true} onChange={handleStartChange} />
               <input type="text" id="invoice-suffix" value={suffix} onChange={handleSuffixChange} />
               <Button variant="primary" type="submit">Utwórz zestawienie</Button>
             </div>

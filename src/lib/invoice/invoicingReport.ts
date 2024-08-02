@@ -4,7 +4,7 @@ import { CompanyData } from '@/lib/invoice/companyData';
 import { IOrder } from '@/lib/orderList';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 
-export default function buildInvoicingReport(orders: IOrder[], monthYear: string, issuer: CompanyData, prefix: string, start: number, suffix: string): InvoicingReport {
+export default function buildInvoicingReport(orders: IOrder[], monthYear: string, issuer: CompanyData, type: string, prefix: string, start: number, suffix: string): InvoicingReport {
   const zero = new Decimal(0);
   const report: InvoicingReport = {
     rows: [],
@@ -20,7 +20,7 @@ export default function buildInvoicingReport(orders: IOrder[], monthYear: string
     }
 
     const number = prefix + invoiceNumber.toString() + suffix;
-    const invoice = buildInvoice(orders[i], 'Faktura', number, issuer);  // todo: take type from input
+    const invoice = buildInvoice(orders[i], type, number, issuer);
 
     report.rows.push({
       rowId,
