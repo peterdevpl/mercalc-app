@@ -169,13 +169,13 @@ export default function Invoices() {
             <MonthYearSelector id="invoice-month" values={context.orderList.timeline.months} onChange={handleMonthYearChange} />
             <Row className="mb-3">
               <Form.Group as={Col} sm="1">
-                <Form.Control type="text" id="invoice-type" size="sm" value={type} required={true} onChange={handleTypeChange} />
+                <Form.Control type="text" id="invoice-type" size="sm" value={type} required onChange={handleTypeChange} />
               </Form.Group>
               <Form.Group as={Col} sm="1">
                 <Form.Control type="text" id="invoice-prefix" size="sm" value={prefix} onChange={handlePrefixChange} />
               </Form.Group>
               <Form.Group as={Col} sm="1">
-                <Form.Control type="number" id="invoice-start" size="sm" value={start} required={true} onChange={handleStartChange} />
+                <Form.Control type="number" id="invoice-start" size="sm" value={start} required onChange={handleStartChange} />
               </Form.Group>
               <Form.Group as={Col} sm="1">
                 <Form.Control type="text" id="invoice-suffix" size="sm" value={suffix} onChange={handleSuffixChange} />
