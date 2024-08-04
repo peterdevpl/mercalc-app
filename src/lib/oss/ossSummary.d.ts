@@ -11,5 +11,4 @@ export type OssSummary = {
   month: number;
   countries: Map<string, OssCountrySummary>;
   totalVat: Decimal;
-  orderAboveOssLimit: string | null;
 };

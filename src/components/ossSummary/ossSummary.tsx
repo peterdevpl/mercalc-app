@@ -78,7 +78,6 @@ export default function OssSummary() {
           </tr>
         </tfoot>
       </Table>
-      {summary.orderAboveOssLimit && <p>Zamówienie przekraczające limit OSS: {summary.orderAboveOssLimit}</p>}
       <div className="form-group">
         <Button variant="secondary" onClick={handlePDFExport}>Eksportuj do PDF</Button>
       </div>

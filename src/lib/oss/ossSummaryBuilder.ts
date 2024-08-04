@@ -1,14 +1,9 @@
 import Decimal from 'decimal.js';
+import filterOrders from '@/lib/order/filterOrders';
 import { IOrder } from '@/lib/orderList';
+import { OrdersFilter } from '@/lib/order/ordersFilter';
 import { OssCountrySummary, OssSummary } from '@/lib/oss/ossSummary';
 import vatRates from '@/lib/oss/vatRates';
-
-const euCountries = ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT',
-  'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE'];
-
-const thisCountry = 'PL';
-
-const ossLimit = new Decimal('10000.00');
 
 export default function buildOssSummary(orders: IOrder[], monthYear: string, isAlreadyOss: boolean): OssSummary {
   const zero = new Decimal(0);
@@ -19,54 +14,36 @@ export default function buildOssSummary(orders: IOrder[], monthYear: string, isA
     month,
     countries: new Map<string, OssCountrySummary>(),
     totalVat: zero,
-    orderAboveOssLimit: null
   };
-  let totalWithinEU = zero;
-  let countOrder = false;
   let vatRate: Decimal;
   let vatDivider: Decimal;
 
-  for (let i = 0; i < orders.length; i++) {
-    if (orders[i].date.substring(0, 4) !== year) {
-      continue;
-    }
+  const filter: OrdersFilter = {
+    monthYear,
+    hasDomestic: false,
+    hasEUBelowOSS: isAlreadyOss,
+    hasEUAboveOSS: true,
+    hasOutsideEU: false,
+  };
+  const filteredOrders = filterOrders(orders, filter);
 
-    if (orders[i].country === thisCountry || !euCountries.includes(orders[i].country)) {
-      continue;
-    }
-
-    countOrder = false;
-
-    if (!isAlreadyOss) {
-      totalWithinEU = totalWithinEU.add(orders[i].total);
-      if (summary.orderAboveOssLimit === null && totalWithinEU.greaterThan(ossLimit)) {
-        summary.orderAboveOssLimit = orders[i].id;
-      }
-      if (summary.orderAboveOssLimit !== null && monthYear === orders[i].date.substring(0, 7)) {
-        countOrder = true;
-      }
-    } else if (monthYear === orders[i].date.substring(0, 7)) {
-      countOrder = true;
-    }
-
-    if (countOrder) {
-      vatRate = vatRates.get(orders[i].country) || zero;
-      vatDivider = vatRate.add(1);
-      const net = orders[i].total.div(vatDivider).toDecimalPlaces(2);
-      const vatAmount = orders[i].total.sub(net);
-      summary.totalVat = summary.totalVat.add(vatAmount);  // this should go into some main invoice builder
-      let countrySummary = summary.countries.get(orders[i].country);
-      if (countrySummary === undefined) {
-        countrySummary = {
-          vatRate,
-          totalAmount: orders[i].total,
-          totalVat: vatAmount
-        };
-        summary.countries.set(orders[i].country, countrySummary);
-      } else {
-        countrySummary.totalAmount = countrySummary.totalAmount.add(orders[i].total);
-        countrySummary.totalVat = countrySummary.totalVat.add(vatAmount);
-      }
+  for (let i = 0; i < filteredOrders.length; i++) {
+    vatRate = vatRates.get(filteredOrders[i].country) || zero;
+    vatDivider = vatRate.add(1);
+    const net = filteredOrders[i].total.div(vatDivider).toDecimalPlaces(2);
+    const vatAmount = filteredOrders[i].total.sub(net);
+    summary.totalVat = summary.totalVat.add(vatAmount);  // this should go into some main invoice builder
+    let countrySummary = summary.countries.get(filteredOrders[i].country);
+    if (countrySummary === undefined) {
+      countrySummary = {
+        vatRate,
+        totalAmount: filteredOrders[i].total,
+        totalVat: vatAmount
+      };
+      summary.countries.set(filteredOrders[i].country, countrySummary);
+    } else {
+      countrySummary.totalAmount = countrySummary.totalAmount.add(filteredOrders[i].total);
+      countrySummary.totalVat = countrySummary.totalVat.add(vatAmount);
     }
   }
 
