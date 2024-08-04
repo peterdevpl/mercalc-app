@@ -184,7 +184,7 @@ export default function Invoices() {
             <Row className="mb-3">
               <Col>
                 <Form.Check id="invoice-include-domestic" label="Zamówienia krajowe" checked={filter.hasDomestic} onChange={handleFilterChange} />
-                <Form.Check id="invoice-include-eu-below-oss" label="Zamówienia UE poniżej limitu OSS" checked={filter.hasEUBelowOSS} onChange={handleFilterChange} />
+                <Form.Check id="invoice-include-eu-below-oss" label="Zamówienia UE do limitu OSS" checked={filter.hasEUBelowOSS} onChange={handleFilterChange} />
                 <Form.Check id="invoice-include-eu-above-oss" label="Zamówienia UE powyżej limitu OSS" checked={filter.hasEUAboveOSS} onChange={handleFilterChange} />
                 <Form.Check id="invoice-include-outside-eu" label="Zamówienia poza UE" checked={filter.hasOutsideEU} onChange={handleFilterChange} />
               </Col>
