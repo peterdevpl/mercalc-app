@@ -5,7 +5,7 @@ import buildInvoicingReport from '@/lib/invoice/invoicingReport';
 import buildCSVInvoicesList from '@/lib/invoice/export/csvInvoicesList';
 import buildPDFInvoice from '@/lib/invoice/export/pdfInvoice';
 import buildPDFInvoicesList from '@/lib/invoice/export/pdfInvoicesList';
-import { Button } from 'react-bootstrap';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CompanyData } from '@/lib/invoice/companyData';
 import CompanyDataForm from '@/components/invoicesList/companyDataForm';
 import downloadBlob from '@/app/downloadBlob';
@@ -166,26 +166,34 @@ export default function Invoices() {
         </section>
         <section>
           <form onSubmit={buildInvoiceList}>
-            <div>
-              <MonthYearSelector id="invoice-month" values={context.orderList.timeline.months} onChange={handleMonthYearChange} />
-              <input type="text" id="invoice-type" value={type} required={true} onChange={handleTypeChange} />
-              <input type="text" id="invoice-prefix" value={prefix} onChange={handlePrefixChange} />
-              <input type="number" id="invoice-start" value={start} required={true} onChange={handleStartChange} />
-              <input type="text" id="invoice-suffix" value={suffix} onChange={handleSuffixChange} />
-            </div>
-            <div>
-              <input type="checkbox" id="invoice-include-domestic" checked={filter.hasDomestic} onChange={handleFilterChange} />
-              <label htmlFor="invoice-include-domestic">Zamówienia krajowe</label>
-              <input type="checkbox" id="invoice-include-eu-below-oss" checked={filter.hasEUBelowOSS} onChange={handleFilterChange} />
-              <label htmlFor="invoice-include-eu-below-oss">Zamówienia UE poniżej limitu OSS</label>
-              <input type="checkbox" id="invoice-include-eu-above-oss" checked={filter.hasEUAboveOSS} onChange={handleFilterChange} />
-              <label htmlFor="invoice-include-eu-above-oss">Zamówienia UE powyżej limitu OSS</label>
-              <input type="checkbox" id="invoice-include-outside-eu" checked={filter.hasOutsideEU} onChange={handleFilterChange} />
-              <label htmlFor="invoice-include-outside-eu">Zamówienia poza UE</label>
-            </div>
-            <div>
-              <Button variant="primary" type="submit">Utwórz zestawienie</Button>
-            </div>
+            <MonthYearSelector id="invoice-month" values={context.orderList.timeline.months} onChange={handleMonthYearChange} />
+            <Row className="mb-3">
+              <Form.Group as={Col} sm="1">
+                <Form.Control type="text" id="invoice-type" size="sm" value={type} required={true} onChange={handleTypeChange} />
+              </Form.Group>
+              <Form.Group as={Col} sm="1">
+                <Form.Control type="text" id="invoice-prefix" size="sm" value={prefix} onChange={handlePrefixChange} />
+              </Form.Group>
+              <Form.Group as={Col} sm="1">
+                <Form.Control type="number" id="invoice-start" size="sm" value={start} required={true} onChange={handleStartChange} />
+              </Form.Group>
+              <Form.Group as={Col} sm="1">
+                <Form.Control type="text" id="invoice-suffix" size="sm" value={suffix} onChange={handleSuffixChange} />
+              </Form.Group>
+            </Row>
+            <Row className="mb-3">
+              <Col>
+                <Form.Check id="invoice-include-domestic" label="Zamówienia krajowe" checked={filter.hasDomestic} onChange={handleFilterChange} />
+                <Form.Check id="invoice-include-eu-below-oss" label="Zamówienia UE poniżej limitu OSS" checked={filter.hasEUBelowOSS} onChange={handleFilterChange} />
+                <Form.Check id="invoice-include-eu-above-oss" label="Zamówienia UE powyżej limitu OSS" checked={filter.hasEUAboveOSS} onChange={handleFilterChange} />
+                <Form.Check id="invoice-include-outside-eu" label="Zamówienia poza UE" checked={filter.hasOutsideEU} onChange={handleFilterChange} />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Button variant="primary" type="submit">Utwórz zestawienie</Button>
+              </Col>
+            </Row>
           </form>
         </section>
         {report && <section>

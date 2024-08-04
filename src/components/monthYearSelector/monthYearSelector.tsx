@@ -1,3 +1,5 @@
+import { Col, Form, Row } from 'react-bootstrap';
+
 const monthNames: string[] = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'];
 
 export default function MonthYearSelector({ id, values, onChange }: { id: string, values: string[], onChange: any }) {
@@ -28,15 +30,19 @@ export default function MonthYearSelector({ id, values, onChange }: { id: string
   }
 
   return (
-    <>
-      <select id={id} onChange={onChange}>
-        {items.map(item => {
-          return (
-            <option key={item.value} value={item.value}>{item.text}</option>
-          );
-        })}
-      </select>
-      {singleYear && <span className="year">&nbsp;{singleYear}</span>}
-    </>
+    <Row className="mb-3">
+      <Col sm={1}>
+        <Form.Select size="sm" id={id} onChange={onChange}>
+          {items.map(item => {
+            return (
+              <option key={item.value} value={item.value}>{item.text}</option>
+            );
+          })}
+        </Form.Select>
+      </Col>
+      <Col sm={10}>
+        {singleYear && <span className="year">&nbsp;{singleYear}</span>}
+      </Col>
+    </Row>
   );
 }
