@@ -13,6 +13,7 @@ import { Invoice } from '@/lib/invoice/invoice';
 import InvoicesList from '@/components/invoicesList/invoicesList';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 import MonthYearSelector from '@/components/monthYearSelector/monthYearSelector';
+import { OrdersFilter } from '@/lib/order/ordersFilter';
 import { useOrderList } from '@/context/orderListContext';
 import React, { FormEvent, useEffect, useState } from 'react';
 
@@ -31,6 +32,16 @@ function buildDefaultCompanyData(): CompanyData {
     country: 'PL',
     bankName: '',
     bankAccount: ''
+  };
+}
+
+function buildDefaultFilter(monthYear: string): OrdersFilter {
+  return {
+    monthYear,
+    hasDomestic: false,
+    hasEUBelowOSS: false,
+    hasEUAboveOSS: false,
+    hasOutsideEU: false,
   };
 }
 
@@ -56,13 +67,15 @@ async function buildZipFile(report: InvoicingReport) {
 export default function Invoices() {
   const context = useOrderList();
 
+  const defaultMonthYear = context.orderList.timeline.months[context.orderList.timeline.months.length - 1];
   const defaultSuffix = '/' + new Date().getFullYear();
-  const [ monthYear, setMonthYear ] = useState(context.orderList.timeline.months[context.orderList.timeline.months.length - 1]);
+
   const [ type, setType ] = useState('Faktura VAT');
   const [ prefix, setPrefix ] = useState('FR/');
   const [ report, setReport ] = useState<InvoicingReport | null>(null);
   const [ start, setStart ] = useState('1');
   const [ suffix, setSuffix ] = useState(defaultSuffix);
+  const [ filter, setFilter ] = useState<OrdersFilter>(buildDefaultFilter(defaultMonthYear));
   const [ companyData, setCompanyData ] = useState<CompanyData>(buildDefaultCompanyData());
 
   useEffect(() => {
@@ -81,9 +94,12 @@ export default function Invoices() {
   if (context.orderList.orders.length > 0) {
     const buildInvoiceList = (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      setReport(buildInvoicingReport(context.orderList.orders, monthYear, companyData, type, prefix, parseInt(start), suffix));
+      setReport(buildInvoicingReport(context.orderList.orders, companyData, type, prefix, parseInt(start), suffix, filter));
     }
-    const handleMonthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => setMonthYear(event.currentTarget.value);  // todo wrap the event, so we dont have to know if it's a select element
+    const handleMonthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {   // todo wrap the event, so we dont have to know if it's a select element
+      const newFilter: OrdersFilter = Object.assign(filter, { monthYear: event.currentTarget.value });
+      setFilter(newFilter);
+    };
     const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       window.localStorage?.setItem(STORAGE_INVOICE_TYPE, event.currentTarget.value);
       setType(event.currentTarget.value);
@@ -97,6 +113,18 @@ export default function Invoices() {
       window.localStorage?.setItem(STORAGE_INVOICE_SUFFIX, event.currentTarget.value);
       setSuffix(event.currentTarget.value);
     }
+
+    const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newFilter = structuredClone(filter);
+      const checked = event.currentTarget.checked;
+      switch (event.currentTarget.id) {
+        case 'invoice-include-domestic': newFilter.hasDomestic = checked; break;
+        case 'invoice-include-eu-below-oss': newFilter.hasEUBelowOSS = checked; break;
+        case 'invoice-include-eu-above-oss': newFilter.hasEUAboveOSS = checked; break;
+        case 'invoice-include-outside-eu': newFilter.hasOutsideEU = checked; break;
+      }
+      setFilter(newFilter);
+    };
 
     const handleCompanyDataChange = (field: string, value: string) => {
       const newData = structuredClone(companyData);
@@ -115,19 +143,19 @@ export default function Invoices() {
 
     const handlePDFExport = () => {
       if (report) {
-        downloadBlob(buildPDFInvoicesList(report), 'raport-' + monthYear + '.pdf');
+        downloadBlob(buildPDFInvoicesList(report), 'raport-' + filter.monthYear + '.pdf');
       }
     };
 
     const handleCSVExport = () => {
       if (report) {
-        downloadBlob(buildCSVInvoicesList(report), 'raport-' + monthYear + '.csv');
+        downloadBlob(buildCSVInvoicesList(report), 'raport-' + filter.monthYear + '.csv');
       }
     };
 
     const handleDownloadAllPDF = () => {
       if (report) {
-        buildZipFile(report).then((blob) => downloadBlob(blob, 'faktury-' + monthYear + '.zip'));
+        buildZipFile(report).then((blob) => downloadBlob(blob, 'faktury-' + filter.monthYear + '.zip'));
       }
     };
 
@@ -144,6 +172,18 @@ export default function Invoices() {
               <input type="text" id="invoice-prefix" value={prefix} onChange={handlePrefixChange} />
               <input type="number" id="invoice-start" value={start} required={true} onChange={handleStartChange} />
               <input type="text" id="invoice-suffix" value={suffix} onChange={handleSuffixChange} />
+            </div>
+            <div>
+              <input type="checkbox" id="invoice-include-domestic" checked={filter.hasDomestic} onChange={handleFilterChange} />
+              <label htmlFor="invoice-include-domestic">Zamówienia krajowe</label>
+              <input type="checkbox" id="invoice-include-eu-below-oss" checked={filter.hasEUBelowOSS} onChange={handleFilterChange} />
+              <label htmlFor="invoice-include-eu-below-oss">Zamówienia UE poniżej limitu OSS</label>
+              <input type="checkbox" id="invoice-include-eu-above-oss" checked={filter.hasEUAboveOSS} onChange={handleFilterChange} />
+              <label htmlFor="invoice-include-eu-above-oss">Zamówienia UE powyżej limitu OSS</label>
+              <input type="checkbox" id="invoice-include-outside-eu" checked={filter.hasOutsideEU} onChange={handleFilterChange} />
+              <label htmlFor="invoice-include-outside-eu">Zamówienia poza UE</label>
+            </div>
+            <div>
               <Button variant="primary" type="submit">Utwórz zestawienie</Button>
             </div>
           </form>

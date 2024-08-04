@@ -1,10 +1,12 @@
 import buildInvoice from '@/lib/invoice/invoiceBuilder';
 import Decimal from 'decimal.js';
 import { CompanyData } from '@/lib/invoice/companyData';
+import filterOrders from '@/lib/order/filterOrders';
 import { IOrder } from '@/lib/orderList';
 import { InvoicingReport } from '@/lib/invoice/invoices';
+import { OrdersFilter } from '@/lib/order/ordersFilter';
 
-export default function buildInvoicingReport(orders: IOrder[], monthYear: string, issuer: CompanyData, type: string, prefix: string, start: number, suffix: string): InvoicingReport {
+export default function buildInvoicingReport(orders: IOrder[], issuer: CompanyData, type: string, prefix: string, start: number, suffix: string, filter: OrdersFilter): InvoicingReport {
   const zero = new Decimal(0);
   const report: InvoicingReport = {
     rows: [],
@@ -14,13 +16,10 @@ export default function buildInvoicingReport(orders: IOrder[], monthYear: string
 
   let rowId = 1;
   let invoiceNumber = start;
-  for (let i = 0; i < orders.length; i++) {
-    if (orders[i].date.substring(0, 7) !== monthYear) {
-      continue;
-    }
-
+  const filteredOrders = filterOrders(orders, filter);
+  for (let i = 0; i < filteredOrders.length; i++) {
     const number = prefix + invoiceNumber.toString() + suffix;
-    const invoice = buildInvoice(orders[i], type, number, issuer);
+    const invoice = buildInvoice(filteredOrders[i], type, number, issuer);
 
     report.rows.push({
       rowId,
@@ -37,8 +36,8 @@ export default function buildInvoicingReport(orders: IOrder[], monthYear: string
       country: invoice.country,
       invoice
     });
-    report.totalEur = report.totalEur.add(orders[i].total);
-    report.totalPln = report.totalPln.add(orders[i].totalConverted ?? zero);
+    report.totalEur = report.totalEur.add(filteredOrders[i].total);
+    report.totalPln = report.totalPln.add(filteredOrders[i].totalConverted ?? zero);
     rowId++;
     invoiceNumber++;
   }
