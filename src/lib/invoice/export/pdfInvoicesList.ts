@@ -14,7 +14,7 @@ function printPdfHeader(pdf: jsPDF, columns: number[]): void
 }
 
 export default function buildPDFInvoicesList(report: InvoicingReport): Blob {
-  const pdf = new jsPDF();
+  const pdf = new jsPDF({ unit: 'mm', compress: true });
   const columns = [5, 20, 60, 90, 115, 155];
   pdf.setFont('Verdana');
   pdf.setFontSize(10);
