@@ -6,7 +6,17 @@ import { IOrder } from '@/lib/orderList';
 import { InvoicingReport } from '@/lib/invoice/invoices';
 import { OrdersFilter } from '@/lib/order/ordersFilter';
 
-export default function buildInvoicingReport(orders: IOrder[], issuer: CompanyData, type: string, prefix: string, start: number, suffix: string, filter: OrdersFilter): InvoicingReport {
+export type InvoicingReportProps = {
+  orders: IOrder[];
+  issuer: CompanyData;
+  type: string;
+  prefix: string;
+  start: number;
+  suffix: string;
+  filter: OrdersFilter;
+};
+
+export default function buildInvoicingReport({ orders, issuer, type, prefix, start, suffix, filter}: InvoicingReportProps): InvoicingReport {
   const zero = new Decimal(0);
   const report: InvoicingReport = {
     rows: [],

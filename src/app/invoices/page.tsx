@@ -88,13 +88,21 @@ export default function Invoices() {
         setCompanyData(JSON.parse(rememberedCompanyData));
       } catch (error) {}
     }
-  }, []);
+  }, [defaultSuffix]);
 
   let contents;
   if (context.orderList.orders.length > 0) {
     const buildInvoiceList = (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      setReport(buildInvoicingReport(context.orderList.orders, companyData, type, prefix, parseInt(start), suffix, filter));
+      setReport(buildInvoicingReport({
+        orders: context.orderList.orders,
+        issuer: companyData,
+        type,
+        prefix,
+        start: parseInt(start),
+        suffix,
+        filter
+      }));
     }
     const handleMonthYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {   // todo wrap the event, so we dont have to know if it's a select element
       const newFilter: OrdersFilter = Object.assign(filter, { monthYear: event.currentTarget.value });
