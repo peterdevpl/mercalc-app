@@ -1,6 +1,7 @@
 'use client';
 
 import buildOssSummary from '@/lib/oss/ossSummaryBuilder';
+import buildCSVOSSSummary from '@/lib/oss/export/csvOssSummary';
 import buildPDFOSSSummary from '@/lib/oss/export/pdfOssSummary';
 import { Button, Col, Row, Table } from 'react-bootstrap';
 import polishCountryNames from '@/lib/i18n/polishCountryNames';
@@ -32,6 +33,10 @@ export default function OssSummary() {
 
   const handlePDFExport = () => {
     downloadBlob(buildPDFOSSSummary(summary), 'raport-oss-' + monthYear + '.pdf');
+  };
+
+  const handleCSVExport = () => {
+    downloadBlob(buildCSVOSSSummary(summary), 'raport-oss-' + monthYear + '.csv');
   };
 
   const rows: any[] = [];
@@ -80,6 +85,7 @@ export default function OssSummary() {
       </Table>
       <div className="form-group">
         <Button variant="secondary" onClick={handlePDFExport}>Eksportuj do PDF</Button>
+        <Button variant="secondary" onClick={handleCSVExport}>Eksportuj do CSV</Button>
       </div>
       </>
     );
