@@ -11,12 +11,13 @@ import CompanyDataForm from '@/components/invoicesList/companyDataForm';
 import downloadBlob from '@/app/downloadBlob';
 import { Invoice } from '@/lib/invoice/invoice';
 import InvoicesList from '@/components/invoicesList/invoicesList';
-import { InvoicingReport } from '@/lib/invoice/invoices';
+import { InvoicingReport, InvoicingReportColumns } from '@/lib/invoice/invoices';
 import MonthYearSelector from '@/components/monthYearSelector/monthYearSelector';
 import { OrdersFilter } from '@/lib/order/ordersFilter';
 import { useOrderList } from '@/context/orderListContext';
 import React, { FormEvent, useEffect, useState } from 'react';
 
+const STORAGE_COLUMNS = 'invoiceReportColumns';
 const STORAGE_COMPANY_DATA = 'companyData';
 const STORAGE_INVOICE_TYPE = 'invoiceType';
 const STORAGE_INVOICE_PREFIX = 'invoicePrefix';
@@ -42,6 +43,21 @@ function buildDefaultFilter(monthYear: string): OrdersFilter {
     hasEUBelowOSS: false,
     hasEUAboveOSS: false,
     hasOutsideEU: false,
+  };
+}
+
+function buildDefaultColumns(): InvoicingReportColumns {
+  return {
+    invoiceNumber: true,
+    issueDate: true,
+    saleDate: true,
+    buyerName: true,
+    country: true,
+    totalEur: true,
+    totalNetEur: true,
+    totalVatEur: true,
+    exchangeRate: true,
+    totalConverted: true,
   };
 }
 
@@ -77,11 +93,18 @@ export default function Invoices() {
   const [ suffix, setSuffix ] = useState(defaultSuffix);
   const [ filter, setFilter ] = useState<OrdersFilter>(buildDefaultFilter(defaultMonthYear));
   const [ companyData, setCompanyData ] = useState<CompanyData>(buildDefaultCompanyData());
+  const [ columns, setColumns ] = useState<InvoicingReportColumns>(buildDefaultColumns());
 
   useEffect(() => {
     setType(window.localStorage?.getItem(STORAGE_INVOICE_TYPE) || 'Faktura VAT');
     setPrefix(window.localStorage?.getItem(STORAGE_INVOICE_PREFIX) ?? 'FR/');
     setSuffix(window.localStorage?.getItem(STORAGE_INVOICE_SUFFIX) ?? defaultSuffix);
+    const rememberedColumns = window.localStorage?.getItem(STORAGE_COLUMNS);
+    if (rememberedColumns) {
+      try {
+        setColumns(JSON.parse(rememberedColumns));
+      } catch (error) {}
+    }
     const rememberedCompanyData = window.localStorage?.getItem(STORAGE_COMPANY_DATA);
     if (rememberedCompanyData) {
       try {
@@ -149,6 +172,25 @@ export default function Invoices() {
       setCompanyData(newData);
     };
 
+    const handleColumnsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newColumns = structuredClone(columns);
+      const checked = event.currentTarget.checked;
+      switch (event.currentTarget.id) {
+        case 'report-col-invoice-number': newColumns.invoiceNumber = checked; break;
+        case 'report-col-issue-date': newColumns.issueDate = checked; break;
+        case 'report-col-sale-date': newColumns.saleDate = checked; break;
+        case 'report-col-buyer-name': newColumns.buyerName = checked; break;
+        case 'report-col-country': newColumns.country = checked; break;
+        case 'report-col-total-eur': newColumns.totalEur = checked; break;
+        case 'report-col-total-net-eur': newColumns.totalNetEur = checked; break;
+        case 'report-col-total-vat-eur': newColumns.totalVatEur = checked; break;
+        case 'report-col-exchange-rate': newColumns.exchangeRate = checked; break;
+        case 'report-col-total-converted': newColumns.totalConverted = checked; break;
+      }
+      window.localStorage?.setItem(STORAGE_COLUMNS, JSON.stringify(newColumns));
+      setColumns(newColumns);
+    };
+
     const handlePDFExport = () => {
       if (report) {
         downloadBlob(buildPDFInvoicesList(report), 'raport-' + filter.monthYear + '.pdf');
@@ -157,7 +199,7 @@ export default function Invoices() {
 
     const handleCSVExport = () => {
       if (report) {
-        downloadBlob(buildCSVInvoicesList(report), 'raport-' + filter.monthYear + '.csv');
+        downloadBlob(buildCSVInvoicesList(report, columns), 'raport-' + filter.monthYear + '.csv');
       }
     };
 
@@ -197,6 +239,20 @@ export default function Invoices() {
                 <Form.Check id="invoice-include-outside-eu" label="Zamówienia poza UE" checked={filter.hasOutsideEU} onChange={handleFilterChange} />
               </Col>
             </Row>
+            <Row className="mb-3">
+              <Col>
+                <Form.Check id="report-col-invoice-number" label="Nr dokumentu" checked={columns.invoiceNumber} onChange={handleColumnsChange} />
+                <Form.Check id="report-col-issue-date" label="Data wystawienia" checked={columns.issueDate} onChange={handleColumnsChange} />
+                <Form.Check id="report-col-sale-date" label="Data sprzedaży" checked={columns.saleDate} onChange={handleColumnsChange} />
+                <Form.Check id="report-col-buyer-name" label="Nazwa kontrahenta" checked={columns.buyerName} onChange={handleColumnsChange} />
+                <Form.Check id="report-col-country" label="Kraj" checked={columns.country} onChange={handleColumnsChange} />
+                <Form.Check id="report-col-total-eur" label="Kwota EUR brutto" checked={columns.totalEur} onChange={handleColumnsChange} />
+                <Form.Check id="report-col-total-net-eur" label="Kwota EUR netto" checked={columns.totalNetEur} onChange={handleColumnsChange} />
+                <Form.Check id="report-col-total-vat-eur" label="VAT EUR" checked={columns.totalVatEur} onChange={handleColumnsChange} />
+                <Form.Check id="report-col-exchange-rate" label="Kurs EUR/PLN" checked={columns.exchangeRate} onChange={handleColumnsChange} />
+                <Form.Check id="report-col-total-converted" label="Kwota PLN" checked={columns.totalConverted} onChange={handleColumnsChange} />
+              </Col>
+            </Row>
             <Row>
               <Col>
                 <Button variant="primary" type="submit">Utwórz zestawienie</Button>
@@ -205,9 +261,9 @@ export default function Invoices() {
           </form>
         </section>
         {report && <section>
-          <InvoicesList report={report} />
+          <InvoicesList report={report} columns={columns} />
           <div className="form-group">
-            <Button variant="secondary" onClick={handlePDFExport}>Eksportuj raport do PDF</Button>
+          <Button variant="secondary" onClick={handlePDFExport}>Eksportuj raport do PDF</Button>
             <Button variant="secondary" onClick={handleCSVExport}>Eksportuj raport do CSV</Button>
             <Button variant="warning" onClick={handleDownloadAllPDF}>Pobierz wszystkie faktury</Button>
           </div>

@@ -24,3 +24,16 @@ export type InvoicingReport = {
   totalEur: Decimal;
   totalPln: Decimal;
 };
+
+export type InvoicingReportColumns = {
+  invoiceNumber: boolean;
+  issueDate: boolean;
+  saleDate: boolean;
+  buyerName: boolean;
+  country: boolean;
+  totalEur: boolean;
+  totalNetEur: boolean;
+  totalVatEur: boolean;
+  exchangeRate: boolean;
+  totalConverted: boolean;
+};

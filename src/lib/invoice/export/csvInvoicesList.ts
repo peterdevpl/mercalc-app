@@ -1,20 +1,46 @@
 import formatMoney from '@/lib/i18n/moneyFormatter';
-import { InvoicingReport } from '@/lib/invoice/invoices';
+import { InvoiceRow, InvoicingReport, InvoicingReportColumns } from '@/lib/invoice/invoices';
 import Papa from 'papaparse';
+import polishCountryNames from '@/lib/i18n/polishCountryNames';
 
-export default function buildCSVInvoicesList(report: InvoicingReport): Blob {
+function buildHeader(columns: InvoicingReportColumns): string[] {
+  const header = [];
+  columns.invoiceNumber && header.push('Nr dokumentu');
+  columns.issueDate && header.push('Data wystawienia');
+  columns.saleDate && header.push('Data sprzedaży');
+  columns.buyerName && header.push('Kontrahent');
+  columns.country && header.push('Kraj');
+  columns.totalEur && header.push('Kwota EUR brutto');
+  columns.totalNetEur && header.push('Kwota EUR netto');
+  columns.totalVatEur && header.push('VAT EUR');
+  columns.exchangeRate && header.push('Kurs EUR/PLN');
+  columns.totalConverted && header.push('Kwota PLN');
+
+  return header;
+}
+
+function buildRow(row: InvoiceRow, columns: InvoicingReportColumns): string[] {
+  const output = [];
+  columns.invoiceNumber && output.push(row.invoiceNumber);
+  columns.issueDate && output.push(row.date.toFormat('dd-MM-yyyy'));
+  columns.saleDate && output.push(row.date.toFormat('dd-MM-yyyy'));
+  columns.buyerName && output.push(row.invoice.buyer.name + ', ' + row.invoice.buyer.street + ', ' + row.invoice.buyer.cityCountry);
+  columns.country && output.push(polishCountryNames.get(row.country) || '');
+  columns.totalEur && output.push(formatMoney(row.totalEur));
+  columns.totalNetEur && output.push(formatMoney(row.totalNetEur));
+  columns.totalVatEur && output.push(formatMoney(row.totalVatEur));
+  columns.exchangeRate && output.push(formatMoney(row.exchangeRate?.rate, 4));
+  columns.totalConverted && output.push(formatMoney(row.totalPln));
+
+  return output;
+}
+
+export default function buildCSVInvoicesList(report: InvoicingReport, columns: InvoicingReportColumns): Blob {
   const rows = [];
-  rows.push(['L.p.', 'Nr faktury', 'Data sprzedaży', 'Kwota EUR', 'Kurs przewalutowania', 'Kwota PLN']);
+  rows.push(buildHeader(columns));
 
   for (let i = 0; i < report.rows.length; i++) {
-    rows.push([
-      report.rows[i].rowId.toString(),
-      report.rows[i].invoiceNumber,
-      report.rows[i].date.toFormat('dd-MM-yyyy'),
-      formatMoney(report.rows[i].totalEur),
-      formatMoney(report.rows[i].exchangeRate?.rate, 4),
-      formatMoney(report.rows[i].totalPln)
-    ]);
+    rows.push(buildRow(report.rows[i], columns));
   }
 
   const csv = Papa.unparse(rows, { delimiter: "\t" });
