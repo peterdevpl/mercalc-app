@@ -216,8 +216,12 @@ export default function Invoices() {
         </section>
         <section>
           <form onSubmit={buildInvoiceList}>
-            <MonthYearSelector id="invoice-month" values={context.orderList.timeline.months} onChange={handleMonthYearChange} />
             <Row className="mb-3">
+              <Col md="3">
+                <MonthYearSelector id="invoice-month" values={context.orderList.timeline.months} onChange={handleMonthYearChange} />
+              </Col>
+            </Row>
+            <Row className="row-cols-lg-auto g-3 align-items-center">
               <Form.Group as={Col} sm="1">
                 <Form.Control type="text" id="invoice-type" size="sm" value={type} required onChange={handleTypeChange} />
               </Form.Group>
