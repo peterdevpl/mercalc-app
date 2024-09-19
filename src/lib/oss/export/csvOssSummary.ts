@@ -8,8 +8,8 @@ function buildDataRows(summary: OssSummary): any[] {
 	summary.countries.forEach((value, key) => {
 		rows.push([
 			polishCountryNames.get(key) || '',
-			value.vatRate.times(100).toString() + '%',
 			formatMoney(value.totalAmount),
+			value.vatRate.times(100).toString() + '%',
 			formatMoney(value.totalVat)
 		]);
 	});
