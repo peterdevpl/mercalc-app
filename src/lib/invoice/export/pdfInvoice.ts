@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { euCountries } from '@/lib/i18n/euCountries';
 import formatMoney from '@/lib/i18n/moneyFormatter';
 import formatPercent from '@/lib/i18n/percentFormatter';
 import { Invoice } from '@/lib/invoice/invoice';
@@ -218,18 +219,26 @@ function printPaymentInfo(pdf: jsPDF, invoice: Invoice, y: number): void {
   pdf.text(invoice.issuer.bankAccount, 12, y + lineHeight * 4 + fontYOffset);
   pdf.text('Słownie zero 00/100 EUR', 114.3, y + lineHeight + fontYOffset);
 
+  y += lineHeight * 5;
+
   if (invoice.exchangeRate) {
-    pdf.line(12, y + lineHeight * 5, 198, y + lineHeight * 5);
+    pdf.line(12, y, 198, y);
     const rateDate = DateTime.fromISO(invoice.exchangeRate.date).toFormat('dd-MM-yyyy');
     const conversion = 'Przeliczono po kursie 1 EUR = ' + formatMoney(invoice.exchangeRate.rate, 4) +
       ' PLN, tabela kursów średnich ' + invoice.exchangeRate.sourceName + ' ' +
       invoice.exchangeRate.sourceDescription + ' z dnia ' + rateDate + ';';
-    pdf.text(conversion, 12, y + lineHeight * 5.5 + fontYOffset);
+    pdf.text(conversion, 12, y + lineHeight * 0.5 + fontYOffset);
 
-    pdf.text('Przeliczona wartość:', 12, y + lineHeight * 6.5 + fontYOffset);
+    pdf.text('Przeliczona wartość:', 12, y + lineHeight * 1.5 + fontYOffset);
     pdf.setFont('OpenSans', 'normal', 'bold');
-    pdf.text(formatMoney(invoice.totalConverted) + ' PLN', 46.5, y + lineHeight * 6.5 + fontYOffset);
+    pdf.text(formatMoney(invoice.totalConverted) + ' PLN', 46.5, y + lineHeight * 1.5 + fontYOffset);
     pdf.setFont('OpenSans', 'normal', 'normal');
+
+    y += lineHeight * 3;
+  }
+
+  if (!euCountries.includes(invoice.country)) {
+    pdf.text('0% VAT na podstawie IE599', 12, y + fontYOffset);
   }
 }
 

@@ -1,11 +1,7 @@
 import Decimal from 'decimal.js';
+import { euCountries, thisCountry } from '@/lib/i18n/euCountries';
 import { IOrder } from '@/lib/orderList';
 import { OrdersSummary } from '@/lib/stats/summary';
-
-const euCountries = ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT',
-  'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE'];
-
-const thisCountry = 'PL';
 
 // todo refactor and tests
 export default function buildSummary(orders: IOrder[]): OrdersSummary {

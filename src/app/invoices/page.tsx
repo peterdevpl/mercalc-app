@@ -9,7 +9,6 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CompanyData } from '@/lib/invoice/companyData';
 import CompanyDataForm from '@/components/invoicesList/companyDataForm';
 import downloadBlob from '@/app/downloadBlob';
-import formatMoney from '@/lib/i18n/moneyFormatter';
 import { Invoice } from '@/lib/invoice/invoice';
 import InvoicesList from '@/components/invoicesList/invoicesList';
 import { InvoicingReport, InvoicingReportColumns } from '@/lib/invoice/invoices';
@@ -63,7 +62,7 @@ function buildDefaultColumns(): InvoicingReportColumns {
 }
 
 function getInvoiceFilename(invoice: Invoice): string {
-  return invoice.invoiceType + ' ' + invoice.invoiceNumber.replace(/[\s\/]/g, '-') + ' ' + invoice.buyer.name.trim() + ' ' + formatMoney(invoice.totalEur) + ' EUR.pdf';
+  return invoice.invoiceType + ' ' + invoice.invoiceNumber.replace(/[\s\/]/g, '-') + ' ' + invoice.buyer.name.trim() + '.pdf';
 }
 
 async function buildZipFile(report: InvoicingReport) {
