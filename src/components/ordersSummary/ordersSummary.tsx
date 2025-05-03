@@ -3,10 +3,10 @@
 import { useOrderList } from '@/context/orderListContext';
 import buildSummary from '@/lib/stats/summaryBuilder';
 import formatMoney from '@/lib/i18n/moneyFormatter';
-import { OrdersSummary } from '@/lib/stats/summary';
 import styles from './ordersSummary.module.css';
 import SwitchButtons from '@/components/switchButtons/switchButtons';
 import { useState } from 'react';
+import type { OrdersSummary } from '@/lib/stats/summary';
 
 type Figure = {
   key: string;
