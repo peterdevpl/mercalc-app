@@ -16,10 +16,16 @@ export default function buildInvoice(order: IOrder, type: string, number: string
     const totalNet = item.total.div(vatDivider).toDecimalPlaces(2);
     items.push({
       rowId,
-      name: 'brelok',  // todo
+      name: {
+				"en": "epoxy resin keychain as party favors,|CODE: 9505.90.40.00",
+				"pl": "brelok"
+			},
       unitPrice: totalNet.div(item.quantity).toDecimalPlaces(2),
       quantity: item.quantity,
-      unit: 'kpl.',
+      unit: {
+				"en": "set",
+				"pl": "kpl."
+			},
       totalNet,
       vatRate,
       vatAmount: item.total.sub(totalNet),
@@ -32,10 +38,16 @@ export default function buildInvoice(order: IOrder, type: string, number: string
     const shippingNet = order.shipping.div(vatDivider).toDecimalPlaces(2);
     items.push({
       rowId,
-      name: 'kurier',
+      name: {
+				"en": "shipping",
+				"pl": "kurier"
+			},
       unitPrice: shippingNet,
       quantity: 1,
-      unit: 'szt.',
+      unit: {
+				"en": "pc",
+				"pl": "szt."
+			},
       totalNet: shippingNet,
       vatRate,
       vatAmount: order.shipping.sub(shippingNet),

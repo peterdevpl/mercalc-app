@@ -9,7 +9,7 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CompanyData } from '@/lib/invoice/companyData';
 import CompanyDataForm from '@/components/invoicesList/companyDataForm';
 import downloadBlob from '@/app/downloadBlob';
-import { Invoice } from '@/lib/invoice/invoice';
+import { Invoice, InvoiceLanguage } from '@/lib/invoice/invoice';
 import InvoicesList from '@/components/invoicesList/invoicesList';
 import { InvoicingReport, InvoicingReportColumns } from '@/lib/invoice/invoices';
 import MonthYearSelector from '@/components/monthYearSelector/monthYearSelector';
@@ -61,16 +61,16 @@ function buildDefaultColumns(): InvoicingReportColumns {
   };
 }
 
-function getInvoiceFilename(invoice: Invoice): string {
-  return invoice.invoiceType + ' ' + invoice.invoiceNumber.replace(/[\s\/]/g, '-') + ' ' + invoice.buyer.name.trim() + '.pdf';
+function getInvoiceFilename(invoice: Invoice, language: InvoiceLanguage): string {
+  return invoice.invoiceType + ' ' + language.toUpperCase() + ' ' + invoice.invoiceNumber.replace(/[\s\/]/g, '-') + ' ' + invoice.buyer.name.trim() + '.pdf';
 }
 
-async function buildZipFile(report: InvoicingReport) {
+async function buildZipFile(report: InvoicingReport, language: InvoiceLanguage) {
   const zipWriter = new ZipWriter(new BlobWriter('application/zip'));
   const files: Promise<EntryMetaData>[] = [];
 
   report.rows.forEach((row) => files.push(
-    zipWriter.add(getInvoiceFilename(row.invoice), new BlobReader(buildPDFInvoice(row.invoice)))
+    zipWriter.add(getInvoiceFilename(row.invoice, language), new BlobReader(buildPDFInvoice(row.invoice, language)))
   ));
 
   await Promise.all(files);
@@ -201,13 +201,19 @@ export default function Invoices() {
       }
     };
 
-    const handleDownloadAllPDF = () => {
+    const handleDownloadAllPDFPL = () => {
       if (report) {
-        buildZipFile(report).then((blob) => downloadBlob(blob, 'faktury-' + filter.monthYear + '.zip'));
+        buildZipFile(report, 'pl').then((blob) => downloadBlob(blob, 'faktury-pl-' + filter.monthYear + '.zip'));
       }
     };
 
-    contents = (
+		const handleDownloadAllPDFEN = () => {
+			if (report) {
+				buildZipFile(report, 'en').then((blob) => downloadBlob(blob, 'faktury-en-' + filter.monthYear + '.zip'));
+			}
+		};
+
+		contents = (
       <>
         <section>
           <CompanyDataForm data={companyData} onChange={handleCompanyDataChange} />
@@ -267,7 +273,8 @@ export default function Invoices() {
           <div className="form-group">
           <Button variant="secondary" onClick={handlePDFExport}>Eksportuj raport do PDF</Button>
             <Button variant="secondary" onClick={handleCSVExport}>Eksportuj raport do CSV</Button>
-            <Button variant="warning" onClick={handleDownloadAllPDF}>Pobierz wszystkie faktury</Button>
+            <Button variant="warning" onClick={handleDownloadAllPDFPL}>Pobierz wszystkie faktury (PL)</Button>
+            <Button variant="warning" onClick={handleDownloadAllPDFEN}>Pobierz wszystkie faktury (EN)</Button>
           </div>
         </section>}
       </>

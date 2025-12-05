@@ -6,10 +6,16 @@ import { IBuyer } from '@/lib/orderList';
 
 export type InvoiceItem = {
   rowId: number;
-  name: string;
+  name: {
+		"en": string;
+		"pl": string;
+	};
   unitPrice: Decimal;
   quantity: number;
-  unit: string;
+  unit: {
+		"en": string;
+		"pl": string;
+	};
   totalNet: Decimal;
   vatRate: Decimal | null;
   vatAmount: Decimal;
@@ -31,3 +37,5 @@ export type Invoice = {
   issuer: CompanyData;
   items: InvoiceItem[];
 };
+
+export type InvoiceLanguage = 'en' | 'pl';

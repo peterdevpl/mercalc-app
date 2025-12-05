@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { euCountries } from '@/lib/i18n/euCountries';
 import formatMoney from '@/lib/i18n/moneyFormatter';
 import formatPercent from '@/lib/i18n/percentFormatter';
-import { Invoice } from '@/lib/invoice/invoice';
+import { Invoice, InvoiceLanguage } from '@/lib/invoice/invoice';
 import { jsPDF } from 'jspdf';
 import polishCountryNames from '@/lib/i18n/polishCountryNames';
 import '@/fonts/OpenSans-bold';
@@ -15,21 +15,81 @@ type Column = {
   align: 'left'|'center'|'right';
 };
 
-function printIssueHeader(pdf: jsPDF, invoice: Invoice): void {
+const languages = {
+	"en": {
+		"issue-place": "Place of issue",
+		"issue-date": "Issue date",
+		"sale-date": "Sale date",
+		"seller": "Seller",
+		"buyer": "Buyer",
+		"tax-id": "Tax ID",
+		"header": [
+			'No.',
+			'Name',
+			'Unit',
+			'Qty',
+			'Net|price',
+			'Total|net',
+			'VAT|rate',
+			'VAT|amount',
+			'Total|gross'
+		],
+		"vat-split": "VAT",
+		"total": "Total",
+		"paid": "Paid",
+		"to-pay": "To pay",
+		"payment-date": "Payment date",
+		"paid-with-transfer": "Payment method: bank transfer",
+		"words": ""
+	},
+	"pl": {
+		"issue-place": "Miejsce wystawienia",
+		"issue-date": "Data wystawienia",
+		"sale-date": "Data wystawienia",
+		"seller": "Sprzedawca",
+		"buyer": "Nabywca",
+		"tax-id": "NIP",
+		"header": [
+			'Lp.',
+			'Nazwa towaru lub usługi',
+			'Jm.',
+			'Ilość',
+			'Cena|netto',
+			'Wartość|netto',
+			'Stawka|VAT',
+			'Kwota|VAT',
+			'Wartość|brutto'
+		],
+		"vat-split": "W tym",
+		"total": "Razem",
+		"paid": "Zapłacono",
+		"to-pay": "Do zapłaty",
+		"payment-date": "Data płatności",
+		"paid-with-transfer": "Sposób płatności: przelew",
+		"words": "Słownie"
+	}
+};
+
+function printIssueHeader(pdf: jsPDF, invoice: Invoice, language: InvoiceLanguage): void {
+	let text;
+
+	text = languages[language]['issue-place'];
   pdf.setFillColor('0.875');
   pdf.rect(123.6, 12, 74.4, 7.5, 'F');
   pdf.line(123.6, 12, 198, 12);
-  pdf.text('Miejsce wystawienia', 144.7, 14.9 + fontYOffset);
+  pdf.text(text, 123.6 + (198 - 123.6 - pdf.getTextWidth(text)) / 2, 14.9 + fontYOffset);
 
+	text = languages[language]['issue-date'];
   pdf.setFillColor('0.875');
   pdf.rect(123.6, 27, 74.4, 7.5, 'F');
   pdf.line(123.6, 27, 198, 27);
-  pdf.text('Data wystawienia', 147, 29.5 + fontYOffset);
+  pdf.text(text, 123.6 + (198 - 123.6 - pdf.getTextWidth(text)) / 2, 29.5 + fontYOffset);
 
+	text = languages[language]['sale-date'];
   pdf.setFillColor('0.875');
   pdf.rect(123.6, 42, 74.4, 7.5, 'F');
   pdf.line(123.6, 42, 198, 42);
-  pdf.text('Data sprzedaży', 148.5, 44.3 + fontYOffset);
+  pdf.text(text, 123.6 + (198 - 123.6 - pdf.getTextWidth(text)) / 2, 44.3 + fontYOffset);
 
   pdf.setFont('OpenSans', 'normal', 'bold');
   let textX = 160.8 - pdf.getTextWidth(invoice.issuer.city) / 2;
@@ -41,26 +101,29 @@ function printIssueHeader(pdf: jsPDF, invoice: Invoice): void {
   pdf.setFont('OpenSans', 'normal', 'normal');
 }
 
-function printContractors(pdf: jsPDF, invoice: Invoice): void {
+function printContractors(pdf: jsPDF, invoice: Invoice, language: InvoiceLanguage): void {
   const lineHeight = 6.3;
   let y = 66.2;
+	let text;
   pdf.setFont('OpenSans', 'normal', 'bold');
 
+	text = languages[language]['seller'];
   pdf.setFillColor('0.875');
   pdf.rect(12, y, 83.7, 7.5, 'F');
   pdf.line(12, y, 95.7, y);
-  pdf.text('Sprzedawca', 43.5, 69 + fontYOffset);
+  pdf.text(text, 12 + (95.7 - 12 - pdf.getTextWidth(text)) / 2, 69 + fontYOffset);
 
+	text = languages[language]['buyer'];
   pdf.setFillColor('0.875');
   pdf.rect(114.3, y, 83.7, 7.5, 'F');
   pdf.line(114.3, y, 198, y);
-  pdf.text('Nabywca', 148.3, 69 + fontYOffset);
+  pdf.text(text, 114.3 + (198 - 114.3 - pdf.getTextWidth(text)) / 2, 69 + fontYOffset);
 
   y += 10;
 
   pdf.setFont('OpenSans', 'normal', 'normal');
   pdf.text(invoice.issuer.name, 12, y + fontYOffset);
-  pdf.text('NIP: ' + invoice.issuer.vatId, 12, y + lineHeight + fontYOffset);
+  pdf.text(languages[language]['tax-id'] + ': ' + invoice.issuer.vatId, 12, y + lineHeight + fontYOffset);
   pdf.text(invoice.issuer.street, 12, y + lineHeight * 2 + fontYOffset);
   pdf.text(invoice.issuer.zipCode + ' ' + invoice.issuer.city, 12, y + lineHeight * 3 + fontYOffset);
 
@@ -70,8 +133,8 @@ function printContractors(pdf: jsPDF, invoice: Invoice): void {
   pdf.text(polishCountryNames.get(invoice.country) || '', 114.3, y + lineHeight * 3 + fontYOffset);
 }
 
-function printDocumentName(pdf: jsPDF, invoice: Invoice): void {
-  const text = invoice.invoiceType + ' ' + invoice.invoiceNumber;
+function printDocumentName(pdf: jsPDF, invoice: Invoice, language: InvoiceLanguage): void {
+  const text = (language === 'pl' ? invoice.invoiceType : 'Invoice #') + ' ' + invoice.invoiceNumber;
   pdf.setFont('OpenSans', 'normal', 'bold');
   pdf.setFontSize(15);
   const x = 105 - pdf.getTextWidth(text) / 2;
@@ -120,43 +183,34 @@ function printTableRow(pdf: jsPDF, columns: Column[], text: string[], x: number,
   }
 }
 
-function printTable(pdf: jsPDF, invoice: Invoice): number {
+function printTable(pdf: jsPDF, invoice: Invoice, language: InvoiceLanguage): number {
   const columns: Column[] = [
     { width: 10, align: 'center' },
-    { width: 58, align: 'left' },
+    { width: 64, align: 'left' },
     { width: 10, align: 'center' },
-    { width: 13, align: 'center' },
-    { width: 19, align: 'right' },
-    { width: 19, align: 'right' },
-    { width: 19, align: 'center' },
-    { width: 19, align: 'right' },
-    { width: 19, align: 'right' }
+    { width: 12, align: 'center' },
+    { width: 18, align: 'right' },
+    { width: 18, align: 'right' },
+    { width: 18, align: 'center' },
+    { width: 18, align: 'right' },
+    { width: 18, align: 'right' }
   ];
   const headerHeight = 13.5;
   const padding = 1;
   let y = 122.5;
   let x = 12;
 
-  const headerText: string[] = [
-    'Lp.',
-    'Nazwa towaru lub usługi',
-    'Jm.',
-    'Ilość',
-    'Cena|netto',
-    'Wartość|netto',
-    'Stawka|VAT',
-    'Kwota|VAT',
-    'Wartość|brutto'
-  ];
-  printTableRow(pdf, columns, headerText, x, y, headerHeight, padding, true);
+  printTableRow(pdf, columns, languages[language]['header'], x, y, headerHeight, padding, true);
   y += headerHeight;
 
-  const rowHeight = 7.5;
+  let rowHeight: number;
   for (let i = 0; i < invoice.items.length; i++) {
+		const linesCount = invoice.items[i].name[language].split('|').length;
+		rowHeight = 7.5 + 6 * (linesCount - 1);
     const itemText: string[] = [
       invoice.items[i].rowId.toString(),
-      invoice.items[i].name,
-      invoice.items[i].unit,
+      invoice.items[i].name[language],
+      invoice.items[i].unit[language],
       invoice.items[i].quantity.toString(),
       formatMoney(invoice.items[i].unitPrice),
       formatMoney(invoice.items[i].totalNet),
@@ -168,14 +222,16 @@ function printTable(pdf: jsPDF, invoice: Invoice): number {
     y += rowHeight;
   }
 
+	rowHeight = 7.5;
+
   const summaryColumns = columns.slice(-4);
-  const colspanWidth = columns[0].width + columns[1].width + columns[2].width + columns[3].width + columns[4].width;
+  const colspanWidth = columns.slice(0, 5).reduce((accumulator, currentValue) => accumulator + currentValue.width, 0);
   x = 12 + colspanWidth;
   pdf.line(12, y, x, y);
 
   pdf.setFont('OpenSans', 'normal', 'bold');
-  pdf.text('W tym', 108.5, y + rowHeight / 2 + fontYOffset / 2);
-  pdf.text('Razem', 108.4, y + rowHeight * 1.5 + fontYOffset / 2);
+  pdf.text(languages[language]['vat-split'], x - padding - pdf.getTextWidth(languages[language]['vat-split']), y + rowHeight / 2 + fontYOffset / 2);
+  pdf.text(languages[language]['total'], x - padding - pdf.getTextWidth(languages[language]['total']), y + rowHeight * 1.5 + fontYOffset / 2);
   pdf.setFont('OpenSans', 'normal', 'normal');
 
   const vatText: string[] = [
@@ -200,7 +256,7 @@ function printTable(pdf: jsPDF, invoice: Invoice): number {
   return y;
 }
 
-function printPaymentInfo(pdf: jsPDF, invoice: Invoice, y: number): void {
+function printPaymentInfo(pdf: jsPDF, invoice: Invoice, y: number, language: InvoiceLanguage): void {
   pdf.line(12, y, 95.7, y);
   pdf.line(114.3, y, 198, y);
   const lineHeight = 6.3;
@@ -208,20 +264,24 @@ function printPaymentInfo(pdf: jsPDF, invoice: Invoice, y: number): void {
 
   pdf.setFont('OpenSans', 'normal', 'bold');
   pdf.setFontSize(11);
-  pdf.text('Zapłacono ' + formatMoney(invoice.totalEur) + ' EUR', 12, y + fontYOffset);
-  pdf.text('Do zapłaty 0,00 EUR', 114.3, y + fontYOffset);
+  pdf.text(languages[language]['paid'] + ' ' + formatMoney(invoice.totalEur) + ' EUR', 12, y + fontYOffset);
+	if (language === 'pl') {
+		pdf.text(languages[language]['to-pay'] + ' 0,00 EUR', 114.3, y + fontYOffset);
+	}
 
   pdf.setFont('OpenSans', 'normal', 'normal');
   pdf.setFontSize(10);
-  pdf.text('Data płatności: ' + invoice.date.toFormat('dd-MM-yyyy'), 12, y + lineHeight + fontYOffset);
-  pdf.text('Sposób płatności: przelew', 12, y + lineHeight * 2 + fontYOffset);
+  pdf.text(languages[language]['payment-date'] + ': ' + invoice.date.toFormat('dd-MM-yyyy'), 12, y + lineHeight + fontYOffset);
+  pdf.text(languages[language]['paid-with-transfer'], 12, y + lineHeight * 2 + fontYOffset);
   pdf.text(invoice.issuer.bankName, 12, y + lineHeight * 3 + fontYOffset);
   pdf.text(invoice.issuer.bankAccount, 12, y + lineHeight * 4 + fontYOffset);
-  pdf.text('Słownie zero 00/100 EUR', 114.3, y + lineHeight + fontYOffset);
+	if (language === 'pl') {
+		pdf.text(languages[language]['words'] + ' zero 00/100 EUR', 114.3, y + lineHeight + fontYOffset);
+	}
 
   y += lineHeight * 5;
 
-  if (invoice.exchangeRate) {
+  if (invoice.exchangeRate && language === 'pl') {
     pdf.line(12, y, 198, y);
     const rateDate = DateTime.fromISO(invoice.exchangeRate.date).toFormat('dd-MM-yyyy');
     const conversion = 'Przeliczono po kursie 1 EUR = ' + formatMoney(invoice.exchangeRate.rate, 4) +
@@ -237,12 +297,12 @@ function printPaymentInfo(pdf: jsPDF, invoice: Invoice, y: number): void {
     y += lineHeight * 3;
   }
 
-  if (!euCountries.includes(invoice.country)) {
+  if (!euCountries.includes(invoice.country) && language === 'pl') {
     pdf.text('0% VAT na podstawie IE599', 12, y + fontYOffset);
   }
 }
 
-export default function buildPDFInvoice(invoice: Invoice): Blob {
+export default function buildPDFInvoice(invoice: Invoice, language: InvoiceLanguage): Blob {
   const pdf = new jsPDF({ unit: 'mm', compress: true });
   pdf.setFont('OpenSans');
   pdf.setFontSize(10);
@@ -250,13 +310,13 @@ export default function buildPDFInvoice(invoice: Invoice): Blob {
   pdf.setDrawColor('0.0');
   pdf.setFillColor('0.875');
 
-  printIssueHeader(pdf, invoice);
-  printContractors(pdf, invoice);
-  printDocumentName(pdf, invoice);
-  let y = printTable(pdf, invoice);
+  printIssueHeader(pdf, invoice, language);
+  printContractors(pdf, invoice, language);
+  printDocumentName(pdf, invoice, language);
+  let y = printTable(pdf, invoice, language);
 
   y += 10;
-  printPaymentInfo(pdf, invoice, y);
+  printPaymentInfo(pdf, invoice, y, language);
 
   return pdf.output('blob');
 }
