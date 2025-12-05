@@ -2,7 +2,6 @@ import { IOrder, IOrderItem } from '@/lib/orderList';
 import { DateTime } from 'luxon';
 import countries from '@/lib/import/countryNameParser';
 import * as he from 'he';
-import polishCountryNames from '@/lib/i18n/polishCountryNames';
 import Decimal from 'decimal.js';
 
 export default function importEtsyCsv(data: string[][]): IOrder[] {
