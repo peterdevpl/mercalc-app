@@ -12,7 +12,7 @@ export default function InvoicesList({ report, columns }: { report: InvoicingRep
     const filename = (invoice.invoiceType + ' ' + invoice.invoiceNumber)
       .toLowerCase()
       .replace(/[\s\/]/g, '-');
-    downloadBlob(buildPDFInvoice(invoice), filename + '.pdf');
+    downloadBlob(buildPDFInvoice(invoice, 'pl'), filename + '.pdf');
   };
 
   let firstColspan = 0;
